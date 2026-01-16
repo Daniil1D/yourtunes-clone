@@ -1,0 +1,197 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("POSTGRES_PRISMA_URL")
+  directUrl = env("POSTGRES_URL_NON_POOLING")
+}
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  password      String
+  fullName      String
+  role          UserRole @default(USER)
+  verified DateTime?
+
+  artists       Artist[]
+  labels        Label[] @relation("LabelOwners")
+  files         File[]
+
+  provider   String?
+  providerId String?
+  
+  subscription  Subscription?
+  auditLogs     AuditLog[]
+
+  verificationCode VerificationCode?
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Artist {
+  id          String   @id @default(cuid())
+  name        String
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+
+  releases    Release[]
+
+  createdAt   DateTime @default(now())
+}
+
+model Label {
+  id          String   @id @default(cuid())
+  name        String
+
+  owners      User[]   @relation("LabelOwners")
+  releases    Release[]
+
+  createdAt   DateTime @default(now())
+}
+
+model Release {
+  id            String        @id @default(cuid())
+  title         String
+  type          ReleaseType
+  status        ReleaseStatus @default(DRAFT)
+  releaseDate   DateTime?
+
+  artistId      String
+  artist        Artist        @relation(fields: [artistId], references: [id])
+
+  labelId       String?
+  label         Label?        @relation(fields: [labelId], references: [id])
+
+  tracks        Track[]
+
+  coverId   String? @unique
+  cover     File?   @relation(fields: [coverId], references: [id])
+
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+
+model Track {
+  id          String      @id @default(cuid())
+  title       String
+  duration    Int?
+  status      TrackStatus @default(DRAFT)
+
+  audioFileId String? @unique
+  audioFile   File?   @relation(fields: [audioFileId], references: [id])
+
+  releaseId   String
+  release     Release @relation(fields: [releaseId], references: [id])
+
+  createdAt   DateTime   @default(now())
+}
+
+model File {
+  id          String    @id @default(cuid())
+  type        FileType
+  url         String
+  size        Int
+  mimeType    String
+
+  uploadedBy String
+  uploader   User @relation(fields: [uploadedBy], references: [id])
+
+  coverFor    Release? 
+  audioFor    Track?   
+
+  createdAt   DateTime  @default(now())
+}
+
+model Subscription {
+  id        String   @id @default(cuid())
+  active    Boolean  @default(true)
+  plan      SubscriptionPlan @default(FREE)
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id])
+
+  startedAt DateTime @default(now())
+  expiresAt DateTime?
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  action    String
+  entity    String
+  entityId  String
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+}
+
+model Invite {
+  id        String   @id @default(cuid())
+  email     String
+  role      UserRole
+
+  token     String   @unique
+  expiresAt DateTime
+
+  createdAt DateTime @default(now())
+}
+
+model VerificationCode {
+  id String @id @default(cuid())
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @unique
+
+  code String
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, code])
+}
+
+enum UserRole {
+  USER
+  ADMIN
+  MODERATOR
+}
+
+enum ReleaseType {
+  SINGLE
+  EP
+  ALBUM
+}
+
+enum ReleaseStatus {
+  DRAFT
+  SUBMITTED
+  IN_REVIEW
+  APPROVED
+  REJECTED
+  DISTRIBUTED
+}
+
+enum TrackStatus {
+  DRAFT
+  READY
+}
+
+enum FileType {
+  AUDIO
+  IMAGE
+  DOCUMENT
+}
+
+enum SubscriptionPlan {
+  FREE
+  PRO
+  LABEL
+}
+
