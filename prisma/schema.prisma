@@ -113,7 +113,10 @@ model File {
 model Subscription {
   id        String   @id @default(cuid())
   active    Boolean  @default(true)
-  plan      SubscriptionPlan @default(FREE)
+
+  planId    SubscriptionPlan
+  plan      Plan     @relation(fields: [planId], references: [id])
+
   userId    String   @unique
   user      User     @relation(fields: [userId], references: [id])
 
@@ -156,6 +159,31 @@ model VerificationCode {
 
   @@unique([userId, code])
 }
+
+model Plan {
+  id          SubscriptionPlan @id
+  title       String
+  description String
+  price       Int
+  oldPrice    Int?
+  period      String
+
+  highlighted Boolean @default(false)
+
+  features    PlanFeature[]
+  subscriptions Subscription[]
+
+  createdAt DateTime @default(now())
+}
+
+model PlanFeature {
+  id     String @id @default(cuid())
+  text   String
+
+  planId SubscriptionPlan
+  plan   Plan @relation(fields: [planId], references: [id])
+}
+
 
 enum UserRole {
   USER

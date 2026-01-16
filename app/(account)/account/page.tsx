@@ -17,11 +17,20 @@ export default async function Profilepage() {
         return redirect("/not-auth")
     }
     
+    const plans = await prisma.plan.findMany({
+        include: {
+            features: true,
+        },
+        orderBy: {
+            price: 'asc',
+        },
+    });
+    
     return (
         <div>
             <ProfileForm data={user}/>
 
-
+            <Plans plans={plans} />
         </div>
     )
 }

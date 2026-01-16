@@ -8,9 +8,8 @@ import { prisma } from "./prisma-client";
 const randomInt = (min: number, max: number) =>
   Math.floor(Math.random() * (max - min + 1)) + min
 
-/* ----------------------------------------
-   DOWN — очистка БД
------------------------------------------*/
+
+
 async function down() {
   await prisma.auditLog.deleteMany()
   await prisma.invite.deleteMany()
@@ -46,10 +45,49 @@ async function up() {
     },
   })
 
+  await prisma.plan.create({
+    data: {
+      id: 'PRO',
+      title: 'PRO',
+      description: 'Для независимых артистов',
+      price: 250,
+      oldPrice: 350,
+      period: 'month',
+      features: {
+        create: [
+          { text: 'До 3 релизов' },
+          { text: 'Мин. сумма вывода 2000₽' },
+          { text: 'Вывод ежеквартально' },
+        ],
+      },
+    },
+  })
+
+  await prisma.plan.create({
+    data: {
+      id: 'LABEL',
+      title: 'LABEL',
+      description: 'Для лейблов и продвинутых артистов',
+      price: 450,
+      oldPrice: 650,
+      period: 'month',
+      highlighted: true,
+      features: {
+        create: [
+          { text: 'До 5 релизов' },
+          { text: 'Мин. сумма вывода 1000₽' },
+          { text: 'Вывод раз в месяц' },
+          { text: 'Подача в плейлисты' },
+          { text: 'Возможность указать свой лейбл' },
+        ],
+      },
+    },
+  })
+  
   await prisma.subscription.create({
     data: {
       userId: user.id,
-      plan: "PRO",
+      planId: "PRO",
       active: true,
     },
   })
@@ -139,6 +177,8 @@ async function up() {
       expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24),
     },
   })
+
+  
 }
 
 
