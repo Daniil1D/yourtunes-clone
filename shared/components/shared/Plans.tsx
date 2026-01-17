@@ -18,6 +18,7 @@ export const Plans: React.FC<PlansProps> = ({ plans }) => {
         {plans.map(plan => (
           <PlanCard
             key={plan.id}
+            id={plan.id}
             title={plan.title}
             description={plan.description}
             price={plan.price}

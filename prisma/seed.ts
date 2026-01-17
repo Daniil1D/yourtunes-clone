@@ -11,16 +11,21 @@ const randomInt = (min: number, max: number) =>
 
 
 async function down() {
+  await prisma.orderItem.deleteMany()
+  await prisma.cartItem.deleteMany()
+  await prisma.subscription.deleteMany()
+  await prisma.planFeature.deleteMany()
+  await prisma.verificationCode.deleteMany()
   await prisma.auditLog.deleteMany()
   await prisma.invite.deleteMany()
-  await prisma.verificationCode.deleteMany()
-  await prisma.subscription.deleteMany()
   await prisma.track.deleteMany()
   await prisma.release.deleteMany()
   await prisma.artist.deleteMany()
   await prisma.label.deleteMany()
   await prisma.file.deleteMany()
+  await prisma.order.deleteMany()
   await prisma.user.deleteMany()
+  await prisma.plan.deleteMany()
 }
 
 async function up() {
@@ -178,6 +183,51 @@ async function up() {
     },
   })
 
+  await prisma.cartItem.createMany({
+    data: [
+      { userId: user.id, planId: 'PRO', quantity: 1 },
+      { userId: user.id, planId: 'LABEL', quantity: 1 },
+    ],
+  });
+
+  // ----------------- ЗАКАЗ -----------------
+  // Создадим заказ для пользователя
+  const order = await prisma.order.create({
+    data: {
+      userId: user.id,
+      status: 'PAID',
+      total: 700, // сумма PRO + LABEL (250 + 450)
+      items: {
+        create: [
+          { planId: 'PRO', price: 250, quantity: 1 },
+          { planId: 'LABEL', price: 450, quantity: 1 },
+        ],
+      },
+    },
+  });
+
+  // ----------------- ПОДПИСКИ -----------------
+  // Преобразуем оплаченный заказ в подписки
+  await prisma.subscription.createMany({
+    data: [
+      {
+        userId: user.id,
+        planId: 'PRO',
+        active: true,
+        startedAt: new Date(),
+        expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30), // 30 дней
+        orderId: order.id,
+      },
+      {
+        userId: user.id,
+        planId: 'LABEL',
+        active: true,
+        startedAt: new Date(),
+        expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30), // 30 дней
+        orderId: order.id,
+      },
+    ],
+  });
   
 }
 

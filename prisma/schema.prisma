@@ -17,18 +17,20 @@ model User {
   password      String
   fullName      String
   role          UserRole @default(USER)
-  verified DateTime?
+  verified      DateTime?
 
   artists       Artist[]
   labels        Label[] @relation("LabelOwners")
   files         File[]
 
-  provider   String?
-  providerId String?
+  provider      String?
+  providerId    String?
   
-  subscription  Subscription?
-  auditLogs     AuditLog[]
+  subscriptions Subscription[]
+  cartItems     CartItem[]
+  orders        Order[]
 
+  auditLogs     AuditLog[]
   verificationCode VerificationCode?
 
   createdAt     DateTime @default(now())
@@ -113,15 +115,17 @@ model File {
 model Subscription {
   id        String   @id @default(cuid())
   active    Boolean  @default(true)
-
+  
   planId    SubscriptionPlan
   plan      Plan     @relation(fields: [planId], references: [id])
 
-  userId    String   @unique
+  userId    String
   user      User     @relation(fields: [userId], references: [id])
 
   startedAt DateTime @default(now())
   expiresAt DateTime?
+  orderId   String?  // Ссылка на оплату (если нужно)
+  order     Order?   @relation(fields: [orderId], references: [id])
 }
 
 model AuditLog {
@@ -167,13 +171,14 @@ model Plan {
   price       Int
   oldPrice    Int?
   period      String
-
   highlighted Boolean @default(false)
 
   features    PlanFeature[]
   subscriptions Subscription[]
+  cartItems    CartItem[]
+  orderItems   OrderItem[]
 
-  createdAt DateTime @default(now())
+  createdAt   DateTime @default(now())
 }
 
 model PlanFeature {
@@ -184,6 +189,46 @@ model PlanFeature {
   plan   Plan @relation(fields: [planId], references: [id])
 }
 
+model CartItem {
+  id      String   @id @default(cuid())
+  userId  String
+  user    User     @relation(fields: [userId], references: [id])
+  
+  planId  SubscriptionPlan
+  plan    Plan     @relation(fields: [planId], references: [id])
+
+  quantity Int     @default(1) 
+
+  createdAt DateTime @default(now())
+}
+
+model Order {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+
+  status    OrderStatus @default(PENDING) 
+  total     Int
+
+  paymentId String?
+  subscriptions Subscription[]
+  
+  items     OrderItem[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model OrderItem {
+  id        String   @id @default(cuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id])
+
+  planId    SubscriptionPlan
+  plan      Plan     @relation(fields: [planId], references: [id])
+
+  price     Int
+  quantity  Int      @default(1)
+}
 
 enum UserRole {
   USER
@@ -223,3 +268,8 @@ enum SubscriptionPlan {
   LABEL
 }
 
+enum OrderStatus {
+  PENDING
+  PAID
+  CANCELLED
+}
