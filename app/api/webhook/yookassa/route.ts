@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Order not found' }, { status: 404 });
   }
 
-  // 🔒 ВАЖНО: если заказ уже оплачен — ничего не делаем
+  // 🔒 Защита от повторных webhook'ов
   if (order.status === 'PAID') {
     return NextResponse.json({ ok: true });
   }
@@ -33,14 +33,23 @@ export async function POST(req: NextRequest) {
   const expiresAt = new Date();
   expiresAt.setDate(expiresAt.getDate() + 30);
 
-  // ✅ Создаём подписки
   await prisma.$transaction(async (tx) => {
     for (const item of order.items) {
 
-      console.log('Создана подписка:', item.planId, expiresAt);
-      
-      await tx.subscription.create({
-        data: {
+      console.log('Создана/обновлена подписка:', item.planId, expiresAt);
+
+      await tx.subscription.upsert({
+        where: {
+          userId_planId_active: {
+            userId: order.userId,
+            planId: item.planId,
+            active: true,
+          },
+        },
+        update: {
+          expiresAt, // продление если уже есть
+        },
+        create: {
           userId: order.userId,
           planId: item.planId,
           active: true,
@@ -51,7 +60,6 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // ✅ Помечаем заказ оплаченным
     await tx.order.update({
       where: { id: order.id },
       data: {
@@ -60,16 +68,12 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // 🧹 Чистим корзину
     await tx.cartItem.deleteMany({
       where: { userId: order.userId },
     });
   });
 
-  console.log('YOOKASSA WEBHOOK', {
-    event: body.event,
-    orderId,
-  });
+  console.log('YOOKASSA WEBHOOK OK', { orderId });
 
   return NextResponse.json({ ok: true });
 }

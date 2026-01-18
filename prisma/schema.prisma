@@ -6,144 +6,145 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("POSTGRES_PRISMA_URL")
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL")
   directUrl = env("POSTGRES_URL_NON_POOLING")
 }
 
 model User {
-  id            String   @id @default(cuid())
-  email         String   @unique
-  password      String
-  fullName      String
-  role          UserRole @default(USER)
-  verified      DateTime?
+  id       String    @id @default(cuid())
+  email    String    @unique
+  password String
+  fullName String
+  role     UserRole  @default(USER)
+  verified DateTime?
 
-  artists       Artist[]
-  labels        Label[] @relation("LabelOwners")
-  files         File[]
+  artists Artist[]
+  labels  Label[]  @relation("LabelOwners")
+  files   File[]
 
-  provider      String?
-  providerId    String?
-  
+  provider   String?
+  providerId String?
+
   subscriptions Subscription[]
   cartItems     CartItem[]
   orders        Order[]
 
-  auditLogs     AuditLog[]
+  auditLogs        AuditLog[]
   verificationCode VerificationCode?
 
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Artist {
-  id          String   @id @default(cuid())
-  name        String
-  userId      String
-  user        User     @relation(fields: [userId], references: [id])
+  id     String @id @default(cuid())
+  name   String
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
 
-  releases    Release[]
+  releases Release[]
 
-  createdAt   DateTime @default(now())
+  createdAt DateTime @default(now())
 }
 
 model Label {
-  id          String   @id @default(cuid())
-  name        String
+  id   String @id @default(cuid())
+  name String
 
-  owners      User[]   @relation("LabelOwners")
-  releases    Release[]
+  owners   User[]    @relation("LabelOwners")
+  releases Release[]
 
-  createdAt   DateTime @default(now())
+  createdAt DateTime @default(now())
 }
 
 model Release {
-  id            String        @id @default(cuid())
-  title         String
-  type          ReleaseType
-  status        ReleaseStatus @default(DRAFT)
-  releaseDate   DateTime?
+  id          String        @id @default(cuid())
+  title       String
+  type        ReleaseType
+  status      ReleaseStatus @default(DRAFT)
+  releaseDate DateTime?
 
-  artistId      String
-  artist        Artist        @relation(fields: [artistId], references: [id])
+  artistId String
+  artist   Artist @relation(fields: [artistId], references: [id])
 
-  labelId       String?
-  label         Label?        @relation(fields: [labelId], references: [id])
+  labelId String?
+  label   Label?  @relation(fields: [labelId], references: [id])
 
-  tracks        Track[]
+  tracks Track[]
 
-  coverId   String? @unique
-  cover     File?   @relation(fields: [coverId], references: [id])
+  coverId String? @unique
+  cover   File?   @relation(fields: [coverId], references: [id])
 
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
-
 model Track {
-  id          String      @id @default(cuid())
-  title       String
-  duration    Int?
-  status      TrackStatus @default(DRAFT)
+  id       String      @id @default(cuid())
+  title    String
+  duration Int?
+  status   TrackStatus @default(DRAFT)
 
   audioFileId String? @unique
   audioFile   File?   @relation(fields: [audioFileId], references: [id])
 
-  releaseId   String
-  release     Release @relation(fields: [releaseId], references: [id])
+  releaseId String
+  release   Release @relation(fields: [releaseId], references: [id])
 
-  createdAt   DateTime   @default(now())
+  createdAt DateTime @default(now())
 }
 
 model File {
-  id          String    @id @default(cuid())
-  type        FileType
-  url         String
-  size        Int
-  mimeType    String
+  id       String   @id @default(cuid())
+  type     FileType
+  url      String
+  size     Int
+  mimeType String
 
   uploadedBy String
-  uploader   User @relation(fields: [uploadedBy], references: [id])
+  uploader   User   @relation(fields: [uploadedBy], references: [id])
 
-  coverFor    Release? 
-  audioFor    Track?   
+  coverFor Release?
+  audioFor Track?
 
-  createdAt   DateTime  @default(now())
+  createdAt DateTime @default(now())
 }
 
 model Subscription {
-  id        String   @id @default(cuid())
-  active    Boolean  @default(true)
-  
-  planId    SubscriptionPlan
-  plan      Plan     @relation(fields: [planId], references: [id])
+  id     String  @id @default(cuid())
+  active Boolean @default(true)
 
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
+  planId SubscriptionPlan
+  plan   Plan             @relation(fields: [planId], references: [id])
 
-  startedAt DateTime @default(now())
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  startedAt DateTime  @default(now())
   expiresAt DateTime?
-  orderId   String?  // Ссылка на оплату (если нужно)
-  order     Order?   @relation(fields: [orderId], references: [id])
+  orderId   String? // Ссылка на оплату (если нужно)
+  order     Order?    @relation(fields: [orderId], references: [id])
+
+  @@unique([userId, planId, active])
 }
 
 model AuditLog {
-  id        String   @id @default(cuid())
-  action    String
-  entity    String
-  entityId  String
+  id       String @id @default(cuid())
+  action   String
+  entity   String
+  entityId String
 
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
 
   createdAt DateTime @default(now())
 }
 
 model Invite {
-  id        String   @id @default(cuid())
-  email     String
-  role      UserRole
+  id    String   @id @default(cuid())
+  email String
+  role  UserRole
 
   token     String   @unique
   expiresAt DateTime
@@ -171,63 +172,65 @@ model Plan {
   price       Int
   oldPrice    Int?
   period      String
-  highlighted Boolean @default(false)
+  highlighted Boolean          @default(false)
 
-  features    PlanFeature[]
+  features      PlanFeature[]
   subscriptions Subscription[]
-  cartItems    CartItem[]
-  orderItems   OrderItem[]
+  cartItems     CartItem[]
+  orderItems    OrderItem[]
 
-  createdAt   DateTime @default(now())
+  createdAt DateTime @default(now())
 }
 
 model PlanFeature {
-  id     String @id @default(cuid())
-  text   String
+  id   String @id @default(cuid())
+  text String
 
   planId SubscriptionPlan
-  plan   Plan @relation(fields: [planId], references: [id])
+  plan   Plan             @relation(fields: [planId], references: [id])
 }
 
 model CartItem {
-  id      String   @id @default(cuid())
-  userId  String
-  user    User     @relation(fields: [userId], references: [id])
-  
-  planId  SubscriptionPlan
-  plan    Plan     @relation(fields: [planId], references: [id])
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
 
-  quantity Int     @default(1) 
+  planId SubscriptionPlan
+  plan   Plan             @relation(fields: [planId], references: [id])
+
+  quantity Int @default(1)
 
   createdAt DateTime @default(now())
+
+  @@unique([userId])
 }
 
 model Order {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
 
-  status    OrderStatus @default(PENDING) 
-  total     Int
+  status OrderStatus @default(PENDING)
+  total  Int
 
-  paymentId String?
+  paymentId     String?
   subscriptions Subscription[]
-  
+
   items     OrderItem[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
 }
 
 model OrderItem {
-  id        String   @id @default(cuid())
-  orderId   String
-  order     Order    @relation(fields: [orderId], references: [id])
+  id      String @id @default(cuid())
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id])
 
-  planId    SubscriptionPlan
-  plan      Plan     @relation(fields: [planId], references: [id])
+  planId SubscriptionPlan
+  plan   Plan             @relation(fields: [planId], references: [id])
 
-  price     Int
-  quantity  Int      @default(1)
+  price    Int
+  quantity Int @default(1)
 }
 
 enum UserRole {

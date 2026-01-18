@@ -19,12 +19,7 @@ export const FormInput: React.FC<Props> = ({
     className,
     ...props
 }) => {
-    const {
-        register,
-        formState: { errors },
-        watch,
-        setValue
-    } = useFormContext()
+    const { register, formState: { errors }, watch, setValue } = useFormContext()
 
     const value = watch(name);
     const errorText = errors[name]?.message as string;

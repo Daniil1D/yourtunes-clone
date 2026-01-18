@@ -17,7 +17,7 @@ export default function Home() {
     let toastMessage = '';
 
     if (searchParams.has('paid')) {
-        toastMessage = 'Заказ успешно оплачен! Информация отправлена на почту.';
+        toastMessage = 'Заказ успешно оплачен!';
     }
 
     if (searchParams.has('verified')) {

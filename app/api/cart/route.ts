@@ -23,31 +23,25 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   const session = await getUserSession();
-  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!session) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
 
-  const { planId, quantity = 1 } = await req.json();
+  const { planId } = await req.json();
 
-  const existing = await prisma.cartItem.findFirst({
-    where: {
-      userId: session.id,
-      planId,
-    },
+  // Удаляем ВСЁ из корзины
+  await prisma.cartItem.deleteMany({
+    where: { userId: session.id },
   });
 
-  if (existing) {
-    await prisma.cartItem.update({
-      where: { id: existing.id },
-      data: { quantity: existing.quantity + quantity },
-    });
-  } else {
-    await prisma.cartItem.create({
-      data: {
-        userId: session.id,
-        planId,
-        quantity,
-      },
-    });
-  }
+  // Добавляем ОДИН тариф
+  await prisma.cartItem.create({
+    data: {
+      userId: session.id,
+      planId,
+      quantity: 1,
+    },
+  });
 
   return GET();
 }

@@ -1,27 +1,17 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { CartStateItem } from '@/shared/lib/get-cart-details';
-import { Button } from '@/shared/components/ui';
+import React from "react";
+import { CartStateItem } from "@/shared/lib/get-cart-details";
+import { Button } from "@/shared/components/ui";
+import { Trash2 } from "lucide-react";
 
 interface Props {
   item: CartStateItem;
   onRemove: (id: string) => Promise<void>;
-  onUpdateQuantity: (id: string, quantity: number) => Promise<void>;
 }
 
-export const CartCard: React.FC<Props> = ({
-  item,
-  onRemove,
-  onUpdateQuantity,
-}) => {
+export const CartCard: React.FC<Props> = ({ item, onRemove }) => {
   const [loading, setLoading] = React.useState(false);
-
-  const handleUpdate = async (quantity: number) => {
-    setLoading(true);
-    await onUpdateQuantity(item.id, quantity);
-    setLoading(false);
-  };
 
   const handleRemove = async () => {
     setLoading(true);
@@ -30,33 +20,22 @@ export const CartCard: React.FC<Props> = ({
   };
 
   return (
-    <div
-      className={`border rounded-2xl p-6 bg-white relative flex justify-between items-center mb-2 transition-opacity ${
-        loading ? 'opacity-50 pointer-events-none' : ''
-      }`}
-    >
+   <div className="flex items-center justify-between border rounded-xl p-4 bg-neutral-50">
       <div>
-        <h4 className="font-bold">{item.name}</h4>
-        <p>{item.price}₽</p>
+        <p className="font-semibold">{item.name}</p>
+        <p className="text-sm text-gray-500">
+          {item.price} ₽ / шт
+        </p>
       </div>
 
       <div className="flex items-center gap-2">
-        <Button onClick={() => handleUpdate(item.quantity - 1)}>
-          −
-        </Button>
-
-        <span>{item.quantity}</span>
-
-        <Button onClick={() => handleUpdate(item.quantity + 1)}>
-          +
-        </Button>
-
         <Button
-          variant="destructive"
-          size="sm"
+          variant="ghost"
+          size="icon"
+          className="text-red-500 hover:text-red-600"
           onClick={handleRemove}
         >
-          {loading ? '...' : '❌'}
+          {loading ? "..." : <Trash2 className="w-4 h-4" />}
         </Button>
       </div>
     </div>

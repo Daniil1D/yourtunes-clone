@@ -13,7 +13,7 @@ const randomInt = (min: number, max: number) =>
 async function down() {
   await prisma.orderItem.deleteMany()
   await prisma.cartItem.deleteMany()
-  await prisma.subscription.deleteMany()
+  await prisma.subscription.deleteMany();
   await prisma.planFeature.deleteMany()
   await prisma.verificationCode.deleteMany()
   await prisma.auditLog.deleteMany()
