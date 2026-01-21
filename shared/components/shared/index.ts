@@ -3,7 +3,7 @@ export { Container } from "./container";
 export { SideMenu } from "./side-menu";
 export { Title } from "./title";
 export { ClearButton } from "./clear-button";
-export { WhiteBlock } from "./white-block";
+// export { WhiteBlock } from "./white-block";
 export { ReguiredSymbol } from './required-symbol'
 export { ProfileForm } from './profile-form'
 export { ErrorText } from './error-text'

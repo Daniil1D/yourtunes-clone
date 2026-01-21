@@ -20,10 +20,6 @@ export default function Home() {
         toastMessage = 'Заказ успешно оплачен!';
     }
 
-    if (searchParams.has('verified')) {
-      toastMessage = 'Почта успешно подтверждена!';
-    }
-
     if (toastMessage) {
       setTimeout(() => {
         router.replace('/');
