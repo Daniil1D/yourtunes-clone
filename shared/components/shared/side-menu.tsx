@@ -12,7 +12,7 @@ interface Props {
 
 const menu = [
     { id: 1, icon: User, href: '/account' },
-    { id: 2, icon: Music, href: '/' },
+    { id: 2, icon: Music, href: '/releases' },
     { id: 3, icon: LayoutGrid, href: '/' },
     { id: 4, icon: CreditCard, href: '/' },
     { id: 5, icon: Banknote, href: '/' },

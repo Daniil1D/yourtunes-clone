@@ -8,3 +8,15 @@ export { Select } from './select';
 export { Skeleton } from './skeleton';
 export { Slider } from './slider';
 export { Textarea } from './textarea';
+export {  AlertDialog,
+  AlertDialogPortal,
+  AlertDialogOverlay,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogFooter,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogAction,
+  AlertDialogCancel,
+} from './alert-dialog'

@@ -29,6 +29,7 @@ model User {
   subscriptions Subscription[]
   cartItems     CartItem[]
   orders        Order[]
+  releases      Release[]
 
   auditLogs        AuditLog[]
   verificationCode VerificationCode?
@@ -72,6 +73,11 @@ model Release {
   label   Label?  @relation(fields: [labelId], references: [id])
 
   tracks Track[]
+
+  platforms ReleasePlatform[]
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
 
   coverId String? @unique
   cover   File?   @relation(fields: [coverId], references: [id])
@@ -233,6 +239,34 @@ model OrderItem {
   quantity Int @default(1)
 }
 
+model Platform {
+  id        String       @id @default(cuid())
+  name      String
+  type      PlatformType
+  logo      String?      // иконка
+  active    Boolean      @default(true)
+
+  releases  ReleasePlatform[]
+
+  createdAt DateTime @default(now())
+
+  @@unique([name])
+}
+
+model ReleasePlatform {
+  id         String   @id @default(cuid())
+
+  releaseId  String
+  release    Release  @relation(fields: [releaseId], references: [id], onDelete: Cascade)
+
+  platformId String
+  platform   Platform @relation(fields: [platformId], references: [id], onDelete: Cascade)
+
+  createdAt  DateTime @default(now())
+
+  @@unique([releaseId, platformId])
+}
+
 enum UserRole {
   USER
   ADMIN
@@ -275,4 +309,9 @@ enum OrderStatus {
   PENDING
   PAID
   CANCELLED
+}
+
+enum PlatformType {
+  STREAMING
+  UGC
 }

@@ -1,8 +1,5 @@
-import { PrismaClient, Prisma } from '@prisma/client'
 import { hashSync } from 'bcrypt'
 import { prisma } from "./prisma-client";
-
-
 
 
 const randomInt = (min: number, max: number) =>
@@ -11,21 +8,22 @@ const randomInt = (min: number, max: number) =>
 
 
 async function down() {
-  await prisma.orderItem.deleteMany()
-  await prisma.cartItem.deleteMany()
+  await prisma.orderItem.deleteMany();
+  await prisma.cartItem.deleteMany();
   await prisma.subscription.deleteMany();
-  await prisma.planFeature.deleteMany()
-  await prisma.verificationCode.deleteMany()
-  await prisma.auditLog.deleteMany()
-  await prisma.invite.deleteMany()
-  await prisma.track.deleteMany()
-  await prisma.release.deleteMany()
-  await prisma.artist.deleteMany()
-  await prisma.label.deleteMany()
-  await prisma.file.deleteMany()
-  await prisma.order.deleteMany()
-  await prisma.user.deleteMany()
-  await prisma.plan.deleteMany()
+  await prisma.planFeature.deleteMany();
+  await prisma.verificationCode.deleteMany();
+  await prisma.auditLog.deleteMany();
+  await prisma.invite.deleteMany();
+  await prisma.track.deleteMany();
+  await prisma.release.deleteMany();
+  await prisma.artist.deleteMany();
+  await prisma.label.deleteMany();
+  await prisma.file.deleteMany();
+  await prisma.order.deleteMany();
+  await prisma.platform.deleteMany();
+  await prisma.user.deleteMany();
+  await prisma.plan.deleteMany();
 }
 
 async function up() {
@@ -89,13 +87,6 @@ async function up() {
     },
   })
   
-  await prisma.subscription.create({
-    data: {
-      userId: user.id,
-      planId: "PRO",
-      active: true,
-    },
-  })
 
   const label = await prisma.label.create({
     data: {
@@ -130,6 +121,7 @@ async function up() {
       type: 'EP',
       status: 'APPROVED',
       releaseDate: new Date(),
+      userId: user.id,
       artistId: artist.id,
       labelId: label.id,
       coverId: coverFile.id,
@@ -174,6 +166,33 @@ async function up() {
     },
   })
 
+  await prisma.platform.createMany({
+    data: [
+
+      { name: 'Apple Music', type: 'STREAMING' },
+      { name: 'Spotify', type: 'STREAMING' },
+      { name: 'TIDAL', type: 'STREAMING' },
+      { name: 'VK Music', type: 'STREAMING' },
+      { name: 'YouTube Music', type: 'STREAMING' },
+      { name: 'Zvuk', type: 'STREAMING' },
+      { name: 'Yandex.Music', type: 'STREAMING' },
+      { name: 'Amazon', type: 'STREAMING' },
+      { name: 'Anghami', type: 'STREAMING' },
+      { name: 'Deezer', type: 'STREAMING' },
+      { name: 'Pandora', type: 'STREAMING' },
+      { name: 'Qobuz', type: 'STREAMING' },
+      { name: 'Shazam', type: 'STREAMING' },
+
+
+      { name: 'Facebook / Instagram', type: 'UGC' },
+      { name: 'SoundCloud', type: 'UGC' },
+      { name: 'TikTok', type: 'UGC' },
+      { name: 'YouTube Content ID', type: 'UGC' },
+      { name: 'MusixMatch', type: 'UGC' },
+    ],
+  })
+
+
   await prisma.invite.create({
     data: {
       email: 'invite@label.dev',
@@ -186,7 +205,6 @@ async function up() {
   await prisma.cartItem.createMany({
     data: [
       { userId: user.id, planId: 'PRO', quantity: 1 },
-      { userId: user.id, planId: 'LABEL', quantity: 1 },
     ],
   });
 
@@ -231,12 +249,6 @@ async function up() {
   
 }
 
-
-
-
-
-
-  
 async function main() {
   try {
     console.log('🌱 Seeding database...')

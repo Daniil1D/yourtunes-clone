@@ -1,5 +1,5 @@
 import { SideMenu } from '@/shared/components/shared';
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
 import { Suspense } from 'react';
 
 export const metadata: Metadata = {
@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 export default function CheckoutLayout({ children }: { children: React.ReactNode }) {
   return (
     <main className="min-h-screen flex">
-        <Suspense>
+       <Suspense>
           <SideMenu />
         </Suspense>
         {children}

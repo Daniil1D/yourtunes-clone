@@ -133,3 +133,87 @@ export async function deactivateExpiredSubscriptions() {
     },
   });
 }
+
+export async function savePlatforms(
+  releaseId: string,
+  platformIds: string[]
+) {
+  await prisma.releasePlatform.deleteMany({
+    where: { releaseId },
+  })
+
+  await prisma.releasePlatform.createMany({
+    data: platformIds.map(id => ({
+      releaseId,
+      platformId: id,
+    })),
+  })
+}
+
+export async function createRelease() {
+  const session = await getUserSession()
+  if (!session) throw new Error('Not authenticated')
+
+  let artist = await prisma.artist.findFirst({ where: { userId: session.id } });
+
+  if (!artist) {
+    
+    artist = await prisma.artist.create({
+      data: {
+        name: 'New Artist',
+        userId: session.id,
+      },
+    });
+  }
+
+  const release = await prisma.release.create({
+    data: {
+      title: 'Untitled release',
+      type: 'SINGLE',
+      status: 'DRAFT',
+      userId: session.id,
+      artistId: artist.id,
+    },
+  })
+
+  return release.id
+}
+
+//Удаление релиза
+export async function deleteRelease(releaseId: string) {
+  const session = await getUserSession()
+  if (!session) throw new Error('Not authenticated')
+
+  const release = await prisma.release.findFirst({
+    where: {
+      id: releaseId,
+      userId: session.id,
+    },
+  })
+
+  if (!release) {
+    throw new Error('Release not found')
+  }
+
+  await prisma.release.delete({
+    where: { id: releaseId },
+  })
+}
+
+
+//Редактирование релиза
+export async function updateRelease(
+  releaseId: string,
+  data: { title?: string }
+) {
+  const session = await getUserSession()
+  if (!session) throw new Error('Not authenticated')
+
+  await prisma.release.updateMany({
+    where: {
+      id: releaseId,
+      userId: session.id,
+    },
+    data,
+  })
+}
