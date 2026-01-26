@@ -1,11 +1,9 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { getUserSession } from "@/shared/lib/get-user-session";
-import { SideMenu } from "./side-menu";
-import { AuthModal } from "./modals";
-import { useRouter } from "next/navigation";
+import React, { useEffect } from "react";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { SideMenu } from "./side-menu";
 
 interface Props {
   children: React.ReactNode;
@@ -13,25 +11,21 @@ interface Props {
 
 export const ProtectedLayout: React.FC<Props> = ({ children }) => {
   const { data: session, status } = useSession();
-
-  const [openAuthModal, setOpenAuthModal] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     if (status === "unauthenticated") {
-      const timer = setTimeout(() => setOpenAuthModal(true), 0);
-      return () => clearTimeout(timer);
+      router.replace("/login");
     }
-  }, [status]);
+  }, [status, router]);
+
+  if (status === "loading") return null;
+  if (!session?.user?.id) return null;
 
   return (
-    <>
-      <AuthModal open={openAuthModal} onClose={() => setOpenAuthModal(false)} />
-      {session && (
-        <main className="flex min-h-screen">
-          <SideMenu />
-          <div className="flex-1">{children}</div>
-        </main>
-      )}
-    </>
+    <main className="flex min-h-screen">
+      <SideMenu />
+      <div className="flex-1">{children}</div>
+    </main>
   );
 };

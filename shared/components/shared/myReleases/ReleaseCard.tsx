@@ -57,7 +57,7 @@ export const ReleaseCard: React.FC<Props> = ({ id, title, status }) => {
         <Button
           variant="secondary"
           className="justify-start gap-2"
-          onClick={() => router.push(`${id}/edit`)}
+          onClick={() => router.push(`/releases/${id}/edit`)}
         >
           <Pencil className="w-4 h-4" />
           Редактировать
@@ -99,7 +99,7 @@ export const ReleaseCard: React.FC<Props> = ({ id, title, status }) => {
         <Button
           variant="ghost"
           className="justify-start gap-2"
-          onClick={() => router.push(`${id}`)}
+          onClick={() => router.push(`/releases/${id}`)}
         >
           Подробнее
           <ArrowRight className="w-4 h-4" />

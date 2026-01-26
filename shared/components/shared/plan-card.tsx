@@ -3,6 +3,7 @@
 import React from 'react'
 import { Button } from '@/shared/components/ui';
 import { useCartStore } from '@/shared/store/cart-store';
+import { Spinner } from './spinner';
 
 interface PlanCardProps {
   id: string;
@@ -16,13 +17,20 @@ interface PlanCardProps {
 
 export const PlanCard: React.FC<PlanCardProps> = ({ id, title, price, oldPrice, features}) => {
   const { addCartItem, items } = useCartStore();
+  
+  const [loading, setLoading] = React.useState(false)
 
   const isInCart = items.some(item => item.planId === id);
 
-  const onAddToCart = async () => {
-    if (isInCart) return;
-    await addCartItem({ planId: id });
-  };
+   const onAddToCart = async () => {
+    if (isInCart) return
+    try {
+      setLoading(true)
+      await addCartItem({ planId: id })
+    } finally {
+      setLoading(false)
+    }
+  }
   
   return (
     <div className="border rounded-2xl p-6 bg-white">
@@ -43,9 +51,10 @@ export const PlanCard: React.FC<PlanCardProps> = ({ id, title, price, oldPrice, 
       <Button
         onClick={onAddToCart}
         disabled={isInCart}
-        className="w-full"
+        className="w-full flex items-center justify-center gap-2"
       >
-        {isInCart ? 'Выбран' : 'Выбрать'}
+        {loading && <Spinner />}
+        {isInCart ? 'Выбран' : loading ? 'Добавляем…' : 'Выбрать'}
       </Button>
     </div>
   );

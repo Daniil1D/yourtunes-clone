@@ -10,5 +10,6 @@ export { ErrorText } from './error-text'
 export { InfoBlock } from './info-block'
 export { Plans } from './Plans';
 export { PlanCard } from './plan-card'
-export { EditReleaseForm } from './EditReleaseForm'
+export { Spinner } from './spinner'
+
 

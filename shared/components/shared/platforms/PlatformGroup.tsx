@@ -7,6 +7,7 @@ import { PlatformItem } from './PlatformItem'
 interface Platform {
   id: string
   name: string
+  logo?: string | null
 }
 
 interface Props {
@@ -43,6 +44,7 @@ export const PlatformGroup: React.FC<Props> = ({
             key={platform.id}
             id={platform.id}
             name={platform.name}
+            logo={platform.logo}
           />
         ))}
       </div>

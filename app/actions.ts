@@ -191,6 +191,8 @@ export async function deleteRelease(releaseId: string) {
     },
   })
 
+  await prisma.track.deleteMany({ where: { releaseId } })
+  
   if (!release) {
     throw new Error('Release not found')
   }

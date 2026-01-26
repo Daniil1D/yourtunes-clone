@@ -5,7 +5,7 @@ import { Nunito } from "next/font/google";
 
 import "./globals.css";
 import { Providers } from "@/shared/components/shared/";
-import { ProtectedLayout } from "@/shared/components/shared/ProtectedLayout";
+
 
 const nunito = Nunito({ 
   subsets: ['cyrillic'],
@@ -17,9 +17,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className={nunito.className}>
-        <Providers>
-          {children}
-        </Providers>
+          <Providers>
+            {children}
+          </Providers>
       </body>
     </html>
   );

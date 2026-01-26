@@ -1,13 +1,15 @@
 'use client'
 
+import Image from 'next/image'
 import { usePlatformsStore } from '@/shared/store/platforms-store'
 
 interface Props {
   id: string
   name: string
+  logo?: string | null
 }
 
-export const PlatformItem = ({ id, name }: Props) => {
+export const PlatformItem = ({ id, name, logo }: Props) => {
   const { selectedIds, toggle } = usePlatformsStore()
 
   const checked = selectedIds.includes(id)
@@ -20,6 +22,17 @@ export const PlatformItem = ({ id, name }: Props) => {
         onChange={() => toggle(id)}
         className="accent-black w-4 h-4"
       />
+
+      {logo && (
+        <Image
+          src={logo}
+          alt={name}
+          width={20}
+          height={20}
+          className="rounded-sm"
+        />
+      )}
+
       <span className="text-sm">{name}</span>
     </label>
   )

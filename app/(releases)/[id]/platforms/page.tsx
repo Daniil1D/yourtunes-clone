@@ -2,6 +2,7 @@ import { prisma } from '@/prisma/prisma-client'
 import { Container, Title } from '@/shared/components/shared'
 import { PlatformGroup } from '@/shared/components/shared/platforms/PlatformGroup'
 import { PlatformsFooter } from '@/shared/components/shared/platforms/PlatformsFooter'
+import { PlatformsAutosave } from '../PlatformsAutosave/page'
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -22,6 +23,8 @@ export default async function SelectPlatformsPage({ params }: PageProps) {
     <Container className="space-y-10 mt-10">
         <Title text="Выбери площадки" size="2xl" className="font-bold" />
 
+        <PlatformsAutosave releaseId={releaseId} />
+        
         <PlatformGroup
           title="Стриминговые платформы"
           platforms={streaming}

@@ -1,30 +1,37 @@
-'use client'
+"use client";
 
-import { Plus, LayoutGrid, List } from 'lucide-react'
-import { useRouter } from 'next/navigation'
+import React from 'react'
+import { Plus, LayoutGrid, List } from "lucide-react";
+import { useRouter } from "next/navigation";
 
-import { Button } from '@/shared/components/ui/button'
-import { Input } from '@/shared/components/ui/input'
-import { Title } from '../title'
-import { createRelease } from '@/app/actions'
+import { Button } from "@/shared/components/ui/button";
+import { Input } from "@/shared/components/ui/input";
+import { Title } from "../title";
+import { createRelease } from "@/app/actions";
 import toast from "react-hot-toast";
+import { Spinner } from "../spinner";
 
 interface Props {
-  className?: string
+  className?: string;
 }
 
 export const ReleasesHeader: React.FC<Props> = ({ className }) => {
-  const router = useRouter()
+  const [loading, setLoading] = React.useState(false);
+
+  const router = useRouter();
 
   const onCreate = async () => {
     try {
-      const releaseId = await createRelease()
-      router.push(`${releaseId}/platforms`)
+      setLoading(true);
+      const releaseId = await createRelease();
+      router.push(`/releases/${releaseId}/platforms`);
     } catch (e) {
-      console.error(e)
-      toast.success('Не удалось создать релиз')
+      console.error(e);
+      toast.success("Не удалось создать релиз");
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="space-y-4">
@@ -50,6 +57,7 @@ export const ReleasesHeader: React.FC<Props> = ({ className }) => {
 
       <button
         onClick={onCreate}
+        disabled={loading}
         className="
           w-full border-2 border-dashed rounded-2xl
           py-10 flex items-center justify-center gap-3
@@ -58,9 +66,9 @@ export const ReleasesHeader: React.FC<Props> = ({ className }) => {
           transition
         "
       >
-        <Plus className="w-6 h-6" />
-        Новый релиз
+        {loading ? <Spinner /> : <Plus className="w-6 h-6" />}
+        {loading ? "Создаём релиз…" : "Новый релиз"}
       </button>
     </div>
-  )
-}
+  );
+};

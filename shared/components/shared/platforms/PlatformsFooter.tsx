@@ -4,8 +4,11 @@ import { Button } from "@/shared/components/ui/button";
 import { savePlatforms } from "@/app/actions";
 import { usePlatformsStore } from "@/shared/store/platforms-store";
 import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 export const PlatformsFooter = ({ releaseId }: { releaseId: string }) => {
+  const router = useRouter()
+  
   const { selectedIds } = usePlatformsStore();
 
   const onNext = async () => {
@@ -19,7 +22,7 @@ export const PlatformsFooter = ({ releaseId }: { releaseId: string }) => {
     try {
       await savePlatforms(releaseId, selectedIds);
       toast.success("Платформы успешно сохранены", { id: toastId });
-      // тут можешь сделать router.push(...) если нужно
+      router.push(`/releases/${releaseId}/upload`)
     } catch (e) {
       toast.error("Ошибка при сохранении", { id: toastId });
     }

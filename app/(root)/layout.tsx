@@ -15,9 +15,6 @@ export default function HomeLayout({
 }>) {
   return (
     <main className="min-h-screen flex">
-      <Suspense>
-        <SideMenu />
-      </Suspense>
       {children}
       {modal}
     </main>

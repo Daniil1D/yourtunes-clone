@@ -3,6 +3,7 @@ import { Container, Title } from '@/shared/components/shared'
 import { PlatformGroup } from '@/shared/components/shared/platforms/PlatformGroup'
 import { PlatformsFooter } from '@/shared/components/shared/platforms/PlatformsFooter'
 import { InitPlatforms } from '@/shared/components/shared/platforms/InitPlatforms'
+import { PlatformsAutosave } from '../PlatformsAutosave/page'
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -29,6 +30,8 @@ export default async function EditReleasePage({ params }: PageProps) {
   return (
     <Container className="space-y-10 mt-10">
       <Title text="Редактирование площадок" size="2xl" />
+
+      <PlatformsAutosave releaseId={releaseId} />
 
       <InitPlatforms selectedIds={selectedIds} />
 
