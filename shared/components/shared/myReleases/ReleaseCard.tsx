@@ -1,12 +1,11 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
 import { Pencil, Trash2, ArrowRight } from 'lucide-react'
 import { Button } from '@/shared/components/ui/button'
 import { deleteRelease } from '@/app/actions'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
-
 import {
   AlertDialog,
   AlertDialogTrigger,
@@ -18,6 +17,7 @@ import {
   AlertDialogCancel,
   AlertDialogAction,
 } from '@/shared/components/ui'
+import { Spinner } from '@/shared/components/shared/spinner'
 
 interface Props {
   id: string
@@ -27,8 +27,10 @@ interface Props {
 
 export const ReleaseCard: React.FC<Props> = ({ id, title, status }) => {
   const router = useRouter()
+  const [loading, setLoading] = useState(false)
 
   const onDelete = async () => {
+    setLoading(true)
     const toastId = toast.loading('Удаляем релиз...')
 
     try {
@@ -37,6 +39,8 @@ export const ReleaseCard: React.FC<Props> = ({ id, title, status }) => {
       router.refresh()
     } catch {
       toast.error('Ошибка при удалении', { id: toastId })
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -65,9 +69,9 @@ export const ReleaseCard: React.FC<Props> = ({ id, title, status }) => {
 
         <AlertDialog>
           <AlertDialogTrigger asChild>
-            <Button variant="secondary" className="justify-start gap-2">
-              <Trash2 className="w-4 h-4" />
-              Удалить
+           <Button variant="secondary" className="justify-start gap-2" disabled={loading}>
+              {loading ? <Spinner /> : <Trash2 className="w-4 h-4" />}
+              {loading ? 'Удаляем...' : 'Удалить'}
             </Button>
           </AlertDialogTrigger>
 
@@ -89,8 +93,9 @@ export const ReleaseCard: React.FC<Props> = ({ id, title, status }) => {
               <AlertDialogAction
                 onClick={onDelete}
                 className="bg-red-600 hover:bg-red-700"
+                disabled={loading}
               >
-                Удалить
+                {loading ? 'Удаляем...' : 'Удалить'}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>

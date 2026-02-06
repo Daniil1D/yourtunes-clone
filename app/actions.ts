@@ -138,6 +138,7 @@ export async function savePlatforms(
   releaseId: string,
   platformIds: string[]
 ) {
+  
   await prisma.releasePlatform.deleteMany({
     where: { releaseId },
   })
@@ -218,4 +219,43 @@ export async function updateRelease(
     },
     data,
   })
+}
+
+//Удаление треклиста
+export async function deleteTrack(trackId: string) {
+  const session = await getUserSession()
+  if (!session) throw new Error('Not authenticated')
+
+  const track = await prisma.track.findFirst({
+    where: {
+      id: trackId,
+      release: {
+        userId: session.id,
+      },
+    },
+  })
+
+  if (!track) {
+    throw new Error('Track not found')
+  }
+
+  await prisma.track.delete({
+    where: { id: trackId },
+  })
+}
+
+// Обновление трека
+export async function updateTrack(trackId: string, data: { title?: string }) {
+  const session = await getUserSession();
+  if (!session) throw new Error("Not authenticated");
+
+  await prisma.track.updateMany({
+    where: {
+      id: trackId,
+      release: {
+        userId: session.id,
+      },
+    },
+    data,
+  });
 }

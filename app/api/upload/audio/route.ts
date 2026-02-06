@@ -8,29 +8,25 @@ import { nanoid } from 'nanoid'
 export async function POST(req: Request) {
   try {
     const session = await getUserSession()
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
     const formData = await req.formData()
-
     const file = formData.get('file') as File
     const releaseId = formData.get('releaseId') as string
 
-    if (!file || !releaseId) {
-      return NextResponse.json({ error: 'Invalid data' }, { status: 400 })
-    }
+    if (!file || !releaseId) return NextResponse.json({ error: 'Invalid data' }, { status: 400 })
 
     const buffer = Buffer.from(await file.arrayBuffer())
-
     const ext = file.name.split('.').pop()
     const fileName = `${nanoid()}.${ext}`
 
     const uploadDir = path.join(process.cwd(), 'public/uploads/audio')
-    await fs.mkdir(uploadDir, { recursive: true })
 
-    const filePath = path.join(uploadDir, fileName)
-    await fs.writeFile(filePath, buffer)
+    await fs.mkdir(uploadDir, { recursive: true })
+    await fs.writeFile(
+      path.join(uploadDir, fileName),
+      buffer
+    )
 
     const savedFile = await prisma.file.create({
       data: {

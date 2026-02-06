@@ -1,13 +1,16 @@
 "use client";
 
+import React, { useState } from 'react'
 import { Button } from "@/shared/components/ui/button";
 import { savePlatforms } from "@/app/actions";
 import { usePlatformsStore } from "@/shared/store/platforms-store";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { Spinner } from "@/shared/components/shared/spinner";   
 
 export const PlatformsFooter = ({ releaseId }: { releaseId: string }) => {
   const router = useRouter()
+  const [loading, setLoading] = useState(false)
   
   const { selectedIds } = usePlatformsStore();
 
@@ -17,6 +20,7 @@ export const PlatformsFooter = ({ releaseId }: { releaseId: string }) => {
       return;
     }
 
+    setLoading(true)
     const toastId = toast.loading("Сохраняем платформы...");
 
     try {
@@ -25,6 +29,8 @@ export const PlatformsFooter = ({ releaseId }: { releaseId: string }) => {
       router.push(`/releases/${releaseId}/upload`)
     } catch (e) {
       toast.error("Ошибка при сохранении", { id: toastId });
+    } finally {
+      setLoading(false)
     }
   };
 
@@ -32,8 +38,9 @@ export const PlatformsFooter = ({ releaseId }: { releaseId: string }) => {
     <Button
       className="w-full h-14 text-lg rounded-xl bg-black text-white"
       onClick={onNext}
+      disabled={loading}
     >
-      Загрузить музыку
+      {loading ? <Spinner /> : "Загрузить музыку"}
     </Button>
   );
 };

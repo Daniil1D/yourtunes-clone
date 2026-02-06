@@ -88,8 +88,10 @@ model Release {
 
 model Track {
   id       String      @id @default(cuid())
+
   title    String
-  duration Int?
+  audioUrl  String?
+  duration  Int?
   status   TrackStatus @default(DRAFT)
 
   audioFileId String? @unique
@@ -98,7 +100,26 @@ model Track {
   releaseId String
   release   Release @relation(fields: [releaseId], references: [id])
 
+  artists   TrackArtist[]
+  feats     TrackFeat[]
+
   createdAt DateTime @default(now())
+}
+
+model TrackArtist {
+  id      String @id @default(cuid())
+  name    String
+
+  trackId String
+  track   Track @relation(fields: [trackId], references: [id], onDelete: Cascade)
+}
+
+model TrackFeat {
+  id      String @id @default(cuid())
+  name    String
+
+  trackId String
+  track   Track @relation(fields: [trackId], references: [id], onDelete: Cascade)
 }
 
 model File {

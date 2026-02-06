@@ -11,5 +11,6 @@ export { InfoBlock } from './info-block'
 export { Plans } from './Plans';
 export { PlanCard } from './plan-card'
 export { Spinner } from './spinner'
+export { SubscriptionsSection } from './subscriptions-section'
 
 
