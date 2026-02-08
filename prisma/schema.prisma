@@ -76,6 +76,8 @@ model Release {
 
   platforms ReleasePlatform[]
 
+  artistCard ArtistCard[]
+
   userId String
   user   User   @relation(fields: [userId], references: [id])
 
@@ -112,6 +114,25 @@ model TrackArtist {
 
   trackId String
   track   Track @relation(fields: [trackId], references: [id], onDelete: Cascade)
+}
+
+model ArtistCard {
+  id String @id @default(cuid())
+
+  name String
+
+  spotifyUrl    String?
+  appleMusicUrl String?
+  socialUrl     String?
+
+  releaseId String
+  release   Release @relation(fields: [releaseId], references: [id], onDelete: Cascade)
+
+  ready Boolean @default(false)
+
+  createdAt DateTime @default(now())
+
+  @@unique([name, releaseId])
 }
 
 model TrackFeat {

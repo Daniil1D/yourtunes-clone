@@ -15,6 +15,9 @@ export default async function ReleaseDetailsPage({ params }: PageProps) {
       label: true,
       tracks: {
         orderBy: { createdAt: 'asc' },
+        include: {
+          artists: true,
+        },
       },
       platforms: {
         include: { platform: true },
@@ -37,7 +40,9 @@ export default async function ReleaseDetailsPage({ params }: PageProps) {
             {release.status === 'DRAFT' ? 'Черновик' : 'Опубликован'}
           </span>
 
-          <h1 className="text-2xl font-bold">{release.title}</h1>
+          <h1 className="text-2xl font-bold">
+            {release.tracks[0]?.artists[0]?.name || release.title}
+          </h1> 
           <p className="text-sm text-gray-500">
             {release.artist.name} {release.label ? `• ${release.label.name}` : ''}
           </p>

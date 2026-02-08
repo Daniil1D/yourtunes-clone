@@ -19,11 +19,12 @@ export default async function TracklistPage({ params }: PageProps) {
     },
   });
 
+
   return (
     <Container className="space-y-10 mt-10">
       <Title text="Треклист" size="2xl" />
 
-      <TracklistClient tracks={tracks} />
+      <TracklistClient tracks={tracks}  />
     </Container>
   );
 }

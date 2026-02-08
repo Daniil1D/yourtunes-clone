@@ -4,7 +4,7 @@ import { prisma } from "@/prisma/prisma-client";
 import { CheckoutFormValues } from "@/shared/contants";
 import { createPayment } from "@/shared/lib/create-payment";
 import { getUserSession } from "@/shared/lib/get-user-session";
-import { OrderStatus, Prisma } from "@prisma/client";
+import { OrderStatus, Prisma, TrackStatus } from "@prisma/client";
 import { hashSync } from 'bcrypt';
 
 export async function createOrder() {
@@ -245,17 +245,76 @@ export async function deleteTrack(trackId: string) {
 }
 
 // Обновление трека
-export async function updateTrack(trackId: string, data: { title?: string }) {
-  const session = await getUserSession();
-  if (!session) throw new Error("Not authenticated");
+export async function updateTrack(
+  trackId: string,
+  data: { title?: string; status?: TrackStatus }
+) {
+  const session = await getUserSession()
+  if (!session) throw new Error("Not authenticated")
 
-  await prisma.track.updateMany({
-    where: {
-      id: trackId,
+  const track = await prisma.track.update({
+    where: { id: trackId },
+    data,
+    include: {
       release: {
-        userId: session.id,
+        include: {
+          tracks: true,
+        },
       },
     },
-    data,
-  });
+  })
+
+
+  // если это единственный трек — обновляем title релиза
+  if (data.title && track.release.tracks.length === 1) {
+    await prisma.release.update({
+      where: { id: track.releaseId },
+      data: { title: data.title },
+    })
+  }
+
+  return track
+}
+
+export async function upsertTrackArtist(
+  trackId: string,
+  name: string
+) {
+  const session = await getUserSession()
+  if (!session) throw new Error("Not authenticated")
+
+  await prisma.trackArtist.deleteMany({
+    where: { trackId },
+  })
+
+  await prisma.trackArtist.create({
+    data: {
+      trackId,
+      name,
+    },
+  })
+}
+
+
+export async function upsertArtistCard(data: {
+  releaseId: string
+  name: string
+  spotifyUrl?: string
+  appleMusicUrl?: string
+  socialUrl?: string
+  ready: boolean
+}) {
+  const session = await getUserSession()
+  if (!session) throw new Error("Not authenticated")
+
+  await prisma.artistCard.upsert({
+    where: {
+      name_releaseId: {
+        name: data.name,
+        releaseId: data.releaseId,
+      },
+    },
+    update: data,
+    create: data,
+  })
 }

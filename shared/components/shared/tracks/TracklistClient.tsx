@@ -55,6 +55,10 @@ export const TracklistClient = ({ tracks }: TracklistClientProps) => {
     }
   };
 
+  const allTracksReady = tracks.length > 0 && tracks.every(
+    track => track.status === "READY"
+  )
+
   return (
     <>
       <div className="space-y-6">
@@ -71,7 +75,7 @@ export const TracklistClient = ({ tracks }: TracklistClientProps) => {
         onChange={(e) => onFileSelect(e.target.files)}
       />
 
-      <TracklistActions onAddTrack={onAddTrack} />
+      <TracklistActions onAddTrack={onAddTrack} allTracksReady={allTracksReady} />
     </>
   );
 };
