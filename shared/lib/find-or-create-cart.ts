@@ -9,7 +9,7 @@ export const findOrCreateCart = async (userId: string) => {
     cart = await prisma.cartItem.create({
       data: {
         userId,
-        planId: 'PRO', // создаем с дефолтным планом или можно пустой
+        planId: 'PRO',
       },
     });
   }

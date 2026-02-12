@@ -26,7 +26,7 @@ export function usePlatformsAutosave(releaseId: string) {
       } catch (e) {
         toast.error('Ошибка сохранения площадок')
       }
-    }, 500) // ⏱ debounce 500мс
+    }, 500)
 
     return () => {
       if (timeoutRef.current) {

@@ -1,7 +1,6 @@
 'use server'
 
 import { prisma } from "@/prisma/prisma-client";
-import { CheckoutFormValues } from "@/shared/contants";
 import { createPayment } from "@/shared/lib/create-payment";
 import { getUserSession } from "@/shared/lib/get-user-session";
 import { OrderStatus, Prisma, TrackStatus } from "@prisma/client";
@@ -317,4 +316,112 @@ export async function upsertArtistCard(data: {
     update: data,
     create: data,
   })
+}
+
+export async function saveReleaseInformation(
+  releaseId: string,
+  data: {
+    title: string
+    label: string
+    genre: string
+    version?: string
+    artist: string
+    publishDate: Date | null
+  }
+) {
+  const session = await getUserSession()
+  if (!session) throw new Error("Not authenticated")
+
+  const release = await prisma.release.findFirst({
+    where: {
+      id: releaseId,
+      userId: session.id,
+    },
+  })
+
+  if (!release) {
+    throw new Error("Release not found")
+  }
+
+  let artist = await prisma.artist.findFirst({
+    where: {
+      userId: session.id,
+      name: data.artist,
+    },
+  })
+
+  if (!artist) {
+    artist = await prisma.artist.create({
+      data: {
+        name: data.artist,
+        userId: session.id,
+      },
+    })
+  }
+
+  let label = await prisma.label.findFirst({
+    where: {
+      name: data.label,
+      owners: {
+        some: { id: session.id },
+      },
+    },
+  })
+
+  if (!label) {
+    label = await prisma.label.create({
+      data: {
+        name: data.label,
+        owners: {
+          connect: { id: session.id },
+        },
+      },
+    })
+  }
+
+  await prisma.release.update({
+    where: { id: releaseId },
+    data: {
+      title: data.title,
+      genre: data.genre,
+      version: data.version || null,
+      releaseDate: data.publishDate,
+      artistId: artist.id,
+      labelId: label.id,
+    },
+  })
+}
+
+
+export async function createBalanceTopUp(amount: number) {
+  const session = await getUserSession();
+  if (!session) throw new Error("Not authenticated");
+
+  if (amount < 100) {
+    throw new Error("Минимальная сумма пополнения 100₽");
+  }
+
+  const order = await prisma.order.create({
+    data: {
+      userId: session.id,
+      status: "PENDING",
+      total: amount,
+      type: "BALANCE_TOPUP",
+    },
+  });
+
+  const paymentData = await createPayment({
+    amount,
+    orderId: order.id,
+    description: `Пополнение баланса #${order.id}`,
+  });
+
+  await prisma.order.update({
+    where: { id: order.id },
+    data: {
+      paymentId: paymentData.id,
+    },
+  });
+
+  return paymentData.confirmation.confirmation_url;
 }

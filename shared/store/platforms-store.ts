@@ -19,13 +19,11 @@ export const usePlatformsStore = create<PlatformsState>((set) => ({
         : [...state.selectedIds, id],
     })),
 
-  // ✅ ДОБАВЛЯЕМ, а не заменяем
   selectMany: (ids) =>
     set((state) => ({
       selectedIds: Array.from(new Set([...state.selectedIds, ...ids])),
     })),
 
-  // ✅ УБИРАЕМ только конкретные ids
   clearMany: (ids) =>
     set((state) => ({
       selectedIds: state.selectedIds.filter(id => !ids.includes(id)),

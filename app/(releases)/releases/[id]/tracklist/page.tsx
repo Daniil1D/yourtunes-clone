@@ -1,6 +1,6 @@
 import { prisma } from "@/prisma/prisma-client";
 import { Container, Title } from "@/shared/components/shared";
-import { TracklistClient } from "@/shared/components/shared/tracks/TracklistClient";
+import { TracklistClient } from "@/shared/components/shared/tracks/tracklist-client";
 
 interface PageProps {
   params: { id: string };

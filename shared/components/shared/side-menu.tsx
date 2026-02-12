@@ -13,8 +13,8 @@ interface Props {
 const menu = [
     { id: 1, icon: User, href: '/account' },
     { id: 2, icon: Music, href: '/releases' },
-    { id: 3, icon: LayoutGrid, href: '/' },
-    { id: 4, icon: CreditCard, href: '/' },
+    { id: 3, icon: LayoutGrid, href: '/statistics' },
+    { id: 4, icon: CreditCard, href: '/balance' },
     { id: 5, icon: Banknote, href: '/' },
     { id: 6, icon: Briefcase, href: '/' },
     { id: 7, icon: HelpCircle, href: '/' },

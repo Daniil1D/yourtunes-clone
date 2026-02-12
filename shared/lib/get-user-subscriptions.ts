@@ -13,5 +13,5 @@ export async function getUserSubscriptions(userId: string) {
     include: { plan: true },
     orderBy: { expiresAt: 'asc' },
   });
-}
+} 
 

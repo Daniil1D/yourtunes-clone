@@ -1,0 +1,5 @@
+-- CreateEnum
+CREATE TYPE "OrderType" AS ENUM ('SUBSCRIPTION', 'BALANCE_TOPUP');
+
+-- AlterTable
+ALTER TABLE "Order" ADD COLUMN     "type" "OrderType" NOT NULL DEFAULT 'SUBSCRIPTION';

@@ -3,11 +3,15 @@
 import React from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { Button } from "@/shared/components/ui/button";
+import { saveReleaseInformation } from "@/app/actions";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 import { ReleaseCoverUpload } from "./release-cover-upload";
 import { ReleaseMainFields } from "./release-main-fields";
 import { ReleaseCopyrightForm } from "./release-copyright-form";
 import { ReleaseArtistsForm } from "./release-artists-form";
+import { ReleasePublishDateForm } from "./release-publish-date-form";
 
 
 interface Props {
@@ -22,6 +26,7 @@ type ReleaseInfoFormValues = {
   genre: string;
   version: string;
   artist: string;
+  publishDate: Date | null;
 };
 
 export const ReleaseInformationForm: React.FC<Props> = ({
@@ -29,6 +34,8 @@ export const ReleaseInformationForm: React.FC<Props> = ({
   defaultTitle,
   defaultArtist,
 }) => {
+  const router = useRouter();
+
   const methods = useForm<ReleaseInfoFormValues>({
     defaultValues: {
       title: defaultTitle,
@@ -36,21 +43,30 @@ export const ReleaseInformationForm: React.FC<Props> = ({
       genre: "",
       version: "",
       artist: defaultArtist,
+      publishDate: null,
     },
     mode: "onChange",
   });
 
-  const onSubmit = (data: ReleaseInfoFormValues) => {
-    console.log("Release Info:", data);
+  const {
+    handleSubmit,
+    formState: { isValid, isSubmitting },
+  } = methods;
+
+  const onSubmit = async (data: ReleaseInfoFormValues) => {
+    try {
+      await saveReleaseInformation(releaseId, data);
+      toast.success("Информация о релизе сохранена");
+      router.refresh();
+    } catch (e) {
+      console.error(e);
+      toast.error("Ошибка при сохранении релиза");
+    }
   };
 
   return (
      <FormProvider {...methods}>
-      <form
-        onSubmit={methods.handleSubmit(onSubmit)}
-        className="space-y-10"
-      >
-        {/* Основная информация */}
+      <form onSubmit={methods.handleSubmit(onSubmit)} className="space-y-10">
         <div className="rounded-3xl border bg-white shadow-sm p-8">
           <div className="grid grid-cols-1 md:grid-cols-[280px_1fr] gap-10">
             <ReleaseCoverUpload />
@@ -58,13 +74,17 @@ export const ReleaseInformationForm: React.FC<Props> = ({
           </div>
         </div>
 
-        {/* Авторское право */}
         <ReleaseCopyrightForm />
 
-        {/* Исполнители */}
         <ReleaseArtistsForm />
 
-        <Button type="submit" className="w-full h-14 text-lg rounded-xl">
+        <ReleasePublishDateForm />
+
+        <Button
+          type="submit"
+          className="w-full h-14 text-lg rounded-xl"
+          disabled={!isValid || isSubmitting}
+        >
           Сохранить информацию
         </Button>
       </form>

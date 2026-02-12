@@ -1,31 +1,28 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/prisma/prisma-client';
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/prisma/prisma-client";
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
 
-  if (body.event !== 'payment.succeeded') {
+  if (body.event !== "payment.succeeded") {
     return NextResponse.json({ ok: true });
   }
 
   const payment = body.object;
-  const orderId = payment.metadata?.order_id;
-
-  if (!orderId) {
-    return NextResponse.json({ error: 'No order_id' }, { status: 400 });
-  }
-
-  const order = await prisma.order.findUnique({
-    where: { id: orderId },
+  const order = await prisma.order.findFirst({
+    where: { paymentId: payment.id },
     include: { items: true },
   });
 
   if (!order) {
-    return NextResponse.json({ error: 'Order not found' }, { status: 404 });
+    return NextResponse.json({ error: "No order_id" }, { status: 400 });
   }
 
-  // 🔒 Защита от повторных webhook'ов
-  if (order.status === 'PAID') {
+  if (!order) {
+    return NextResponse.json({ error: "Order not found" }, { status: 404 });
+  }
+
+  if (order.status === "PAID") {
     return NextResponse.json({ ok: true });
   }
 
@@ -34,28 +31,46 @@ export async function POST(req: NextRequest) {
   expiresAt.setDate(expiresAt.getDate() + 30);
 
   await prisma.$transaction(async (tx) => {
-    for (const item of order.items) {
+    if (order.type === "SUBSCRIPTION") {
+      for (const item of order.items) {
+        console.log("Создана/обновлена подписка:", item.planId, expiresAt);
 
-      console.log('Создана/обновлена подписка:', item.planId, expiresAt);
-
-      await tx.subscription.upsert({
-        where: {
-          userId_planId_active: {
+        await tx.subscription.upsert({
+          where: {
+            userId_planId_active: {
+              userId: order.userId,
+              planId: item.planId,
+              active: true,
+            },
+          },
+          update: {
+            expiresAt,
+          },
+          create: {
             userId: order.userId,
             planId: item.planId,
             active: true,
+            startedAt: now,
+            expiresAt,
+            orderId: order.id,
           },
-        },
-        update: {
-          expiresAt, // продление если уже есть
-        },
-        create: {
-          userId: order.userId,
-          planId: item.planId,
-          active: true,
-          startedAt: now,
-          expiresAt,
-          orderId: order.id,
+        });
+      }
+
+      await tx.cartItem.deleteMany({
+        where: { userId: order.userId },
+      });
+    }
+
+    if (order.type === "BALANCE_TOPUP") {
+      console.log("Пополнение баланса на сумму:", order.total);
+
+      await tx.user.update({
+        where: { id: order.userId },
+        data: {
+          balance: {
+            increment: order.total,
+          },
         },
       });
     }
@@ -63,17 +78,13 @@ export async function POST(req: NextRequest) {
     await tx.order.update({
       where: { id: order.id },
       data: {
-        status: 'PAID',
+        status: "PAID",
         paymentId: payment.id,
       },
     });
-
-    await tx.cartItem.deleteMany({
-      where: { userId: order.userId },
-    });
   });
 
-  console.log('YOOKASSA WEBHOOK OK', { orderId });
+  console.log("YOOKASSA WEBHOOK OK", { order });
 
   return NextResponse.json({ ok: true });
 }

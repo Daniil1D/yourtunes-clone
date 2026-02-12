@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "-": "^0.0.1",
+    "@a2seven/yoo-checkout": "^1.1.4",
     "@aws-sdk/client-s3": "^3.975.0",
     "@aws-sdk/s3-request-presigner": "^3.975.0",
     "@hookform/resolvers": "^5.2.2",
@@ -33,6 +34,7 @@
     "bullmq": "^5.66.5",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
     "ioredis": "^5.9.1",
     "lucide-react": "^0.562.0",
     "music-metadata": "^11.11.0",
@@ -40,6 +42,7 @@
     "next-auth": "^4.24.13",
     "nextjs-toploader": "^3.9.17",
     "react": "19.2.3",
+    "react-day-picker": "^9.13.1",
     "react-dom": "19.2.3",
     "react-hook-form": "^7.71.0",
     "react-hot-toast": "^2.6.0",

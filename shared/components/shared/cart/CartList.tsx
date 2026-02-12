@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useCartStore } from '@/shared/store/cart-store';
 import { CartCard } from './CartCard';
 import { Container } from '../container';
-import { CheckoutButton } from '../CheckoutButton';
+import { CheckoutButton } from '../checkout-button';
 
 export const CartList: React.FC = () => {
   const { items, totalAmount, fetchCartItems, removeCartItem } = useCartStore();

@@ -34,6 +34,8 @@ model User {
   auditLogs        AuditLog[]
   verificationCode VerificationCode?
 
+  balance  Int      @default(0)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -65,6 +67,9 @@ model Release {
   type        ReleaseType
   status      ReleaseStatus @default(DRAFT)
   releaseDate DateTime?
+
+  genre   String?
+  version String?
 
   artistId String
   artist   Artist @relation(fields: [artistId], references: [id])
@@ -265,6 +270,9 @@ model Order {
   subscriptions Subscription[]
 
   items     OrderItem[]
+
+  type   OrderType @default(SUBSCRIPTION)
+  
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
 }
@@ -356,4 +364,9 @@ enum OrderStatus {
 enum PlatformType {
   STREAMING
   UGC
+}
+
+enum OrderType {
+  SUBSCRIPTION
+  BALANCE_TOPUP
 }
