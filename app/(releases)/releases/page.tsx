@@ -1,40 +1,24 @@
-import { prisma } from '@/prisma/prisma-client'
-import { getUserSession } from '@/shared/lib/get-user-session'
-import { ReleasesHeader } from '@/shared/components/shared/myReleases/ReleasesHeader'
-import { ReleaseCard } from '@/shared/components/shared/myReleases/ReleaseCard'
-import { Container } from '@/shared/components/shared'
+import { Suspense } from "react";
+import { Container } from "@/shared/components/shared";
+import { ReleasesHeader } from "@/shared/components/shared/myReleases/ReleasesHeader";
+import { ReleasesSkeleton } from "@/shared/components/shared/skeleton/releases-skeleton";
+import { ReleasesListServer } from "./_components/releases-list-server";
 
-export default async function ReleasesPage() {
-  const session = await getUserSession()
-  if (!session) return null
+interface PageProps {
+  searchParams: Promise<{ q?: string }>;
+}
 
-  const releases = await prisma.release.findMany({
-    where: {
-      userId: session.id,
-    },
-    orderBy: {
-      createdAt: 'desc',
-    },
-  })
+export default async function ReleasesPage({ searchParams }: PageProps) {
+  const { q } = await searchParams;
 
   return (
     <Container className="space-y-10 mt-10">
+
       <ReleasesHeader />
 
-      <div className="space-y-4">
-        {releases.map(release => (
-          <ReleaseCard
-            key={release.id}
-            id={release.id}
-            title={release.title}
-            status={
-              release.status === 'DRAFT'
-                ? 'Черновик'
-                : 'Опубликован'
-            }
-          />
-        ))}
-      </div>
+      <Suspense fallback={<ReleasesSkeleton />} key={q}>
+        <ReleasesListServer query={q} />
+      </Suspense>
     </Container>
-  )
+  );
 }
