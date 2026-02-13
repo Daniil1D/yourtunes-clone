@@ -2,89 +2,102 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/prisma/prisma-client";
 
 export async function POST(req: NextRequest) {
-  const body = await req.json();
+  try {
+    const body = await req.json();
 
-  if (body.event !== "payment.succeeded") {
-    return NextResponse.json({ ok: true });
-  }
+    if (body.event !== "payment.succeeded") {
+      return NextResponse.json({ ok: true });
+    }
 
-  const payment = body.object;
-  const order = await prisma.order.findFirst({
-    where: { paymentId: payment.id },
-    include: { items: true },
-  });
+    const payment = body.object;
 
-  if (!order) {
-    return NextResponse.json({ error: "No order_id" }, { status: 400 });
-  }
+    // ищем заказ по paymentId
+    const order = await prisma.order.findFirst({
+      where: { paymentId: payment.id },
+      include: { items: true },
+    });
 
-  if (!order) {
-    return NextResponse.json({ error: "Order not found" }, { status: 404 });
-  }
+    if (!order) {
+      console.log("Order not found for payment:", payment.id);
+      return NextResponse.json({ error: "Order not found" }, { status: 404 });
+    }
 
-  if (order.status === "PAID") {
-    return NextResponse.json({ ok: true });
-  }
+    if (order.status === "PAID") {
+      return NextResponse.json({ ok: true });
+    }
 
-  const now = new Date();
-  const expiresAt = new Date();
-  expiresAt.setDate(expiresAt.getDate() + 30);
+    await prisma.$transaction(async (tx) => {
+      // Пополнение баланса
+      if (order.type === "BALANCE_TOPUP") {
+        console.log("💰 Balance top up:", order.total);
 
-  await prisma.$transaction(async (tx) => {
-    if (order.type === "SUBSCRIPTION") {
-      for (const item of order.items) {
-        console.log("Создана/обновлена подписка:", item.planId, expiresAt);
-
-        await tx.subscription.upsert({
-          where: {
-            userId_planId_active: {
-              userId: order.userId,
-              planId: item.planId,
-              active: true,
+        // увеличиваем баланс
+        await tx.user.update({
+          where: { id: order.userId },
+          data: {
+            balance: {
+              increment: order.total,
             },
           },
-          update: {
-            expiresAt,
-          },
-          create: {
+        });
+
+        // ДОБАВЛЯЕМ транзакцию в историю
+        await tx.transaction.create({
+          data: {
             userId: order.userId,
-            planId: item.planId,
-            active: true,
-            startedAt: now,
-            expiresAt,
-            orderId: order.id,
+            amount: order.total,
+            type: "TOPUP",
           },
         });
       }
 
-      await tx.cartItem.deleteMany({
-        where: { userId: order.userId },
-      });
-    }
+      // Подписка
+      if (order.type === "SUBSCRIPTION") {
+        const expiresAt = new Date();
+        expiresAt.setDate(expiresAt.getDate() + 30);
 
-    if (order.type === "BALANCE_TOPUP") {
-      console.log("Пополнение баланса на сумму:", order.total);
+        for (const item of order.items) {
+          await tx.subscription.upsert({
+            where: {
+              userId_planId_active: {
+                userId: order.userId,
+                planId: item.planId,
+                active: true,
+              },
+            },
+            update: {
+              expiresAt,
+            },
+            create: {
+              userId: order.userId,
+              planId: item.planId,
+              active: true,
+              startedAt: new Date(),
+              expiresAt,
+              orderId: order.id,
+            },
+          });
+        }
 
-      await tx.user.update({
-        where: { id: order.userId },
+        await tx.cartItem.deleteMany({
+          where: { userId: order.userId },
+        });
+      }
+
+      // Заказ отмечаем как оплаченный
+      await tx.order.update({
+        where: { id: order.id },
         data: {
-          balance: {
-            increment: order.total,
-          },
+          status: "PAID",
         },
       });
-    }
-
-    await tx.order.update({
-      where: { id: order.id },
-      data: {
-        status: "PAID",
-        paymentId: payment.id,
-      },
     });
-  });
 
-  console.log("YOOKASSA WEBHOOK OK", { order });
+    console.log("YOOKASSA WEBHOOK OK:", order.id);
 
-  return NextResponse.json({ ok: true });
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("Webhook error:", error);
+    return NextResponse.json({ error: "Server error" }, { status: 500 });
+  }
 }

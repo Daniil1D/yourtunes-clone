@@ -46,7 +46,7 @@ export const TracklistClient = ({ tracks }: TracklistClientProps) => {
       });
 
       toast.success("Трек добавлен");
-      router.refresh(); // 🔥 обновляем серверный page
+      router.refresh();
     } catch (err) {
       toast.error("Ошибка загрузки трека");
       console.error(err);

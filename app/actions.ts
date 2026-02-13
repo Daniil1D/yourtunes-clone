@@ -425,3 +425,46 @@ export async function createBalanceTopUp(amount: number) {
 
   return paymentData.confirmation.confirmation_url;
 }
+
+
+export async function withdrawBalance(amount: number) {
+  const session = await getUserSession();
+  if (!session) throw new Error("Not authenticated");
+
+  if (amount < 100) {
+    throw new Error("Минимальная сумма вывода 100₽");
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: session.id },
+  });
+
+  if (!user) throw new Error("User not found");
+
+  if (user.balance < amount) {
+    throw new Error("Недостаточно средств");
+  }
+
+  await prisma.$transaction(async (tx) => {
+    // списываем баланс
+    await tx.user.update({
+      where: { id: session.id },
+      data: {
+        balance: {
+          decrement: amount,
+        },
+      },
+    });
+
+    // создаём транзакцию
+    await tx.transaction.create({
+      data: {
+        userId: session.id,
+        amount,
+        type: "WITHDRAW",
+      },
+    });
+  });
+
+  return true;
+}

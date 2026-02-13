@@ -1,5 +1,5 @@
 import { prisma } from "@/prisma/prisma-client"
-import { ProfileForm } from "@/shared/components/shared"
+import { Profile } from "@/shared/components/shared/profile/profile"
 import { getUserSession } from "@/shared/lib/get-user-session"
 import { redirect } from "next/navigation"
 
@@ -13,6 +13,6 @@ export async function ProfileFormServer() {
 
   if (!user) redirect("/not-auth")
 
-  return <ProfileForm data={user} />
+  return <Profile data={user} />
 }
     
