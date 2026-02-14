@@ -136,6 +136,8 @@ export const authOptions: AuthOptions = {
           token.email = findUser.email;
           token.fullName = findUser.fullName;
           token.role = findUser.role;
+
+          token.avatarUrl = findUser.avatarUrl;
         }
 
         return token;
@@ -144,6 +146,8 @@ export const authOptions: AuthOptions = {
         if (session?.user) {
           session.user.id = token.id;
           session.user.role = token.role;
+
+          session.user.avatarUrl = token.avatarUrl;
         }
 
         return session;
