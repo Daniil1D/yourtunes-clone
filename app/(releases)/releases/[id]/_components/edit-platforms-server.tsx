@@ -1,5 +1,5 @@
 import { prisma } from "@/prisma/prisma-client";
-import { PlatformGroup } from "@/shared/components/shared/platforms/PlatformGroup";
+import { PlatformsDropdown } from "@/shared/components/shared/platforms/platforms-dropdown";
 import { PlatformsFooter } from "@/shared/components/shared/platforms/PlatformsFooter";
 import { InitPlatforms } from "@/shared/components/shared/platforms/InitPlatforms";
 import { PlatformsAutosave } from "../PlatformsAutosave/page";
@@ -21,8 +21,7 @@ export async function EditPlatformsServer({ releaseId }: Props) {
 
   const selectedIds = selected.map((p) => p.platformId);
 
-  const streaming = platforms.filter((p) => p.type === "STREAMING");
-  const ugc = platforms.filter((p) => p.type === "UGC");
+
 
   return (
     <>
@@ -30,13 +29,11 @@ export async function EditPlatformsServer({ releaseId }: Props) {
 
       <InitPlatforms selectedIds={selectedIds} />
 
-      <PlatformGroup title="Стриминговые платформы" platforms={streaming} />
+      {/* <PlatformsDropdown
 
-      <PlatformGroup
-        title="UGC платформы"
-        description="Допускается только 100% авторский контент"
-        platforms={ugc}
-      />
+        platforms={platforms} name={""} onChangeSave={function (): void {
+          throw new Error("Function not implemented.");
+        } }            /> */}
 
       <PlatformsFooter releaseId={releaseId} />
     </>

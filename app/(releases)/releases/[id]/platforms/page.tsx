@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { Container, Title } from "@/shared/components/shared";
 import { PlatformsSkeleton } from "@/shared/components/shared/skeleton/platforms-skeleton";
-import { SelectPlatformsServer } from "../_components/select-platforms-server";
+
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -16,7 +16,7 @@ export default async function SelectPlatformsPage({ params }: PageProps) {
       <Title text="Выбери площадки" size="2xl" className="font-bold" />
 
       <Suspense fallback={<PlatformsSkeleton />}>
-        <SelectPlatformsServer releaseId={id} />
+
       </Suspense>
     </Container>
   );

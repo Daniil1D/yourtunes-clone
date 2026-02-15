@@ -7,6 +7,7 @@ interface PageProps {
 
 export default async function UploadAudioPage({ params }: PageProps) {
   const { id: releaseId } = await params
+  
 
   return (
     <Container className="space-y-8 mt-10">

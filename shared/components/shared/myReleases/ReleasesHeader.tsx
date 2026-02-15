@@ -39,7 +39,7 @@ export const ReleasesHeader = () => {
     try {
       setLoading(true);
       const releaseId = await createRelease();
-      router.push(`/releases/${releaseId}/platforms`);
+      router.push(`/releases/${releaseId}/releases-information`);
     } catch {
       toast.error("Не удалось создать релиз");
     } finally {

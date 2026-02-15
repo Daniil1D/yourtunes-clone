@@ -40,7 +40,7 @@ export const PlatformsFooter = ({ releaseId }: { releaseId: string }) => {
       onClick={onNext}
       disabled={loading}
     >
-      {loading ? <Spinner /> : "Загрузить музыку"}
+      {loading ? <Spinner /> : "Сохранить"}
     </Button>
   );
 };

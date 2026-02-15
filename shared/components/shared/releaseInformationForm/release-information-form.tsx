@@ -7,12 +7,11 @@ import { saveReleaseInformation } from "@/app/actions";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
-import { ReleaseCoverUpload } from "./release-cover-upload";
+import { ReleaseCoverUpload } from "../platforms/release-cover-upload";
 import { ReleaseMainFields } from "./release-main-fields";
 import { ReleaseCopyrightForm } from "./release-copyright-form";
 import { ReleaseArtistsForm } from "./release-artists-form";
 import { ReleasePublishDateForm } from "./release-publish-date-form";
-
 
 interface Props {
   releaseId: string;
@@ -65,11 +64,10 @@ export const ReleaseInformationForm: React.FC<Props> = ({
   };
 
   return (
-     <FormProvider {...methods}>
+    <FormProvider {...methods}>
       <form onSubmit={methods.handleSubmit(onSubmit)} className="space-y-10">
         <div className="rounded-3xl border bg-white shadow-sm p-8">
           <div className="grid grid-cols-1 md:grid-cols-[280px_1fr] gap-10">
-            <ReleaseCoverUpload />
             <ReleaseMainFields />
           </div>
         </div>

@@ -25,17 +25,10 @@ export const TracklistActions: React.FC<TracklistActionsProps> = ({ onAddTrack, 
 
       <Button
         className="w-full h-14 rounded-xl border text-lg"
-        disabled={!allTracksReady}
         onClick={() => router.push(`/releases/${releaseId}/information-releases`)}
       >
         Далее
       </Button>
-
-      {!allTracksReady && (
-        <div className="text-sm text-gray-500 text-center">
-          Заполните все треки, чтобы продолжить
-        </div>
-      )}
 
       <Button
         variant="outline"
