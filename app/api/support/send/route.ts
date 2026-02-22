@@ -1,6 +1,35 @@
 import { prisma } from "@/prisma/prisma-client";
 import { getUserSession } from "@/shared/lib/get-user-session";
 import { NextResponse } from "next/server";
+import { retrieveKnowledge } from "@/shared/lib/retrieveKnowledge";
+import { openai } from "@/shared/lib/openai";
+
+export async function getAIResponse(message: string) {
+  const relevantKnowledge = retrieveKnowledge(message);
+
+  const completion = await openai.chat.completions.create({
+    model: "gpt-4o-mini",
+    messages: [
+      {
+        role: "system",
+        content: `
+Ты служба поддержки сервиса YourTunes.
+Используй ТОЛЬКО информацию ниже.
+Если ответа нет в базе знаний — скажи, что уточнишь.
+
+База знаний:
+${relevantKnowledge}
+`,
+      },
+      {
+        role: "user",
+        content: message,
+      },
+    ],
+  });
+
+  return completion.choices[0].message.content ?? "";
+}
 
 export async function POST(req: Request) {
   try {
@@ -38,82 +67,7 @@ export async function POST(req: Request) {
       },
     });
 
-    // Популярные вопросы и ответы
-    const faq = [
-      {
-        questions: [
-          "как изменить пароль",
-          "как поменять пароль",
-          "сменить пароль",
-          "изменить пароль",
-          "поменять пароль",
-          "пароль поменять",
-        ],
-        answer: `Чтобы изменить пароль нужно:
-          • Зайти на страницу «Профиль»
-          • Нажать кнопку «Редактировать»
-          • Изменить пароль
-          • Нажать «Сохранить»`,
-      },
-
-      {
-        questions: [
-          "как пополнить баланс",
-          "пополнить баланс",
-          "как закинуть деньги",
-          "как оплатить",
-        ],
-        answer: "Баланс пополняется через страницу Баланс.",
-      },
-
-      {
-        questions: [
-          "как выйти из аккаунта",
-          "выйти",
-          "разлогиниться",
-          "выйти из профиля",
-        ],
-        answer:
-          "Чтобы выйти, откройте профиль → Редактировать → «Выйти».",
-      },
-
-      {
-        questions: [
-          "что дает подписка pro",
-          "что такое pro",
-          "подписка pro",
-          "зачем нужна pro",
-        ],
-        answer: `Подписка PRO — 250₽/мес
-          • До 3 релизов
-          • Мин. сумма вывода 2000₽
-          • Вывод ежеквартально`,
-      },
-
-      {
-        questions: [
-          "как связаться с поддержкой",
-          "поддержка",
-          "саппорт",
-          "помогите",
-          "связаться",
-        ],
-        answer:
-          "Вы уже пишете в поддержку 🙂 Мы отвечаем в течение нескольких часов.",
-      },
-    ];
-
-
-    // Автоответ бота
-    const normalized = text.toLowerCase().trim();
-
-    const found = faq.find((item) =>
-      item.questions.some((q) => normalized.includes(q))
-    );
-
-    const botReplyText = found
-      ? found.answer
-      : "Здравствуйте! Мы получили ваше сообщение. Поддержка скоро ответит 🙌";
+    const botReplyText = await getAIResponse(text);
 
     const botMessage = await prisma.supportMessage.create({
       data: {
@@ -133,3 +87,4 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }
+
