@@ -23,7 +23,9 @@ export async function ReleasesListServer({ query }: Props) {
           }
         : {}),
     },
-
+    include: {
+      cover: true,
+    },
     orderBy: {
       createdAt: "desc",
     },
@@ -44,9 +46,11 @@ export async function ReleasesListServer({ query }: Props) {
           key={release.id}
           id={release.id}
           title={release.title}
-          status={release.status === "DRAFT" ? "Черновик" : "Опубликован"}
+          status={release.status}
+          coverUrl={release.cover?.url ?? null}
         />
       ))}
     </div>
   );
 }
+

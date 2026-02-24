@@ -23,6 +23,7 @@ interface TracklistClientProps {
 export const TracklistClient = ({ tracks }: TracklistClientProps) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const router = useRouter();
+  const [completedTracks, setCompletedTracks] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
 
   const onAddTrack = () => {
@@ -55,15 +56,18 @@ export const TracklistClient = ({ tracks }: TracklistClientProps) => {
     }
   };
 
-  const allTracksReady = tracks.length > 0 && tracks.every(
-    track => track.status === "READY"
-  )
+  const handleTrackCompleted = (trackId: string) => {
+    setCompletedTracks((prev) => [...prev, trackId]);
+  };
+
+  const allTracksReady =
+    completedTracks.length === tracks.length && tracks.length > 0;
 
   return (
     <>
       <div className="space-y-6">
         {tracks.map((track) => (
-          <TrackForm key={track.id} track={track} />
+          <TrackForm key={track.id} track={track} onCompleted={() => handleTrackCompleted(track.id)}/>
         ))}
       </div>
 

@@ -9,7 +9,6 @@ interface PageProps {
 export default async function TracklistPage({ params }: PageProps) {
   const { id: releaseId } = await params; 
 
-  // Получаем треки с сервера
   const tracks = await prisma.track.findMany({
     where: { releaseId },
     include: {

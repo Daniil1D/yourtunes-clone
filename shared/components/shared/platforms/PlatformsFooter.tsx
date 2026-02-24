@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import { Button } from "@/shared/components/ui/button";
-import { savePlatforms } from "@/app/actions";
+import { savePlatforms } from "@/app/actions/index";
 import { usePlatformsStore } from "@/shared/store/platforms-store";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";

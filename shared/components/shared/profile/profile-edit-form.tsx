@@ -14,7 +14,7 @@ import {
 
 import { FormInput } from "../form";
 import { Button } from "@/shared/components/ui";
-import { updateUserInfo } from "@/app/actions";
+import { updateUserInfo } from "@/app/actions/index";
 
 interface Props {
   user: User;

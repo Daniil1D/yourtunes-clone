@@ -3,10 +3,10 @@
 import React from "react";
 import { Plus } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-
+import { useReleaseStore } from "@/shared/store/release-store";
 import { Input } from "@/shared/components/ui/input";
 import { Title } from "../title";
-import { createRelease } from "@/app/actions";
+import { createRelease } from "@/app/actions/index";
 import toast from "react-hot-toast";
 import { Spinner } from "../spinner";
 
@@ -16,6 +16,8 @@ export const ReleasesHeader = () => {
 
   const router = useRouter();
   const searchParams = useSearchParams();
+
+  const resetRelease = useReleaseStore((s) => s.resetRelease);
 
   React.useEffect(() => {
     setValue(searchParams.get("q") || "");
@@ -38,8 +40,11 @@ export const ReleasesHeader = () => {
   const onCreate = async () => {
     try {
       setLoading(true);
+      resetRelease(); 
       const releaseId = await createRelease();
-      router.push(`/releases/${releaseId}/releases-information`);
+      useReleaseStore.getState().setRelease({ id: releaseId });
+
+      router.push(`/releases/${releaseId}/platforms`);
     } catch {
       toast.error("Не удалось создать релиз");
     } finally {
@@ -83,3 +88,4 @@ export const ReleasesHeader = () => {
     </div>
   );
 };
+

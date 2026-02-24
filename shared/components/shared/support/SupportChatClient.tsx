@@ -6,10 +6,11 @@ import { Button } from "@/shared/components/ui/button";
 import { getSupportMessages, sendSupportMessage } from "./support";
 import { useSession } from "next-auth/react";
 import toast from "react-hot-toast";
+import { SupportRole } from "@prisma/client";
 
 interface Message {
   id: string;
-  role: "USER" | "BOT" | "ADMIN";
+  role: SupportRole;
   text: string;
   createdAt: string;
 }
@@ -42,7 +43,6 @@ export const SupportChatClient = () => {
     loadMessages();
   }, []);
 
-  // когда сообщения меняются — скроллим вниз
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
@@ -83,14 +83,12 @@ export const SupportChatClient = () => {
                   isUser ? "justify-end" : "justify-start"
                 }`}
               >
-                {/* Аватар бота слева */}
                 {!isUser && (
                   <div className="w-9 h-9 rounded-full bg-black text-white flex items-center justify-center text-sm font-bold">
                     🤖
                   </div>
                 )}
 
-                {/* Сообщение */}
                 <div
                   className={`max-w-[70%] px-4 py-2 rounded-2xl text-sm whitespace-pre-line ${
                     isUser
@@ -101,7 +99,6 @@ export const SupportChatClient = () => {
                   {msg.text}
                 </div>
 
-                {/* Аватар пользователя справа */}
                 {isUser && (
                   <div className="w-9 h-9 rounded-full overflow-hidden border">
                     {userAvatar ? (

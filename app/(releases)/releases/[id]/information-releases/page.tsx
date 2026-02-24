@@ -10,20 +10,14 @@ interface PageProps {
 export default async function InformationReleasePage({ params }: PageProps) {
   const { id: releaseId } = await params;
 
-  const firstTrack = await prisma.track.findFirst({
-    where: {
-      releaseId,
-    },
-    orderBy: {
-      createdAt: "asc",
-    },
-    select: {
-      title: true,
-      artists: {
-        select: {
-          name: true,
+  const release = await prisma.release.findUnique({
+    where: { id: releaseId },
+    include: {
+      tracks: {
+        include: {
+          artists: true,
         },
-        take: 1,
+        orderBy: { createdAt: "asc" },
       },
     },
   });
@@ -34,9 +28,9 @@ export default async function InformationReleasePage({ params }: PageProps) {
 
       <ReleaseInformationForm
         releaseId={releaseId}
-        defaultTitle={firstTrack?.title || ""}
-        defaultArtist={firstTrack?.artists?.[0]?.name || ""}
+        release={release}
       />
     </Container>
   );
 }
+

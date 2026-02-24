@@ -28,21 +28,41 @@ export async function ReleaseDetailsServer({ releaseId }: Props) {
     return <Container>Релиз не найден</Container>;
   }
 
+  const statusMap: Record<string, string> = {
+    DRAFT: "Черновик",
+    SUBMITTED: "Отправлен",
+    IN_REVIEW: "На проверке",
+    APPROVED: "Одобрен",
+    DISTRIBUTED: "Доставлен",
+    REJECTED: "Отклонён",
+  };
+
+  const coverUrl = release.cover?.url ?? null;
+
   return (
     <>
+      {/* HEADER */}
       <div className="flex items-center gap-6">
-        <div className="w-24 h-24 rounded-xl bg-gray-100 flex items-center justify-center">
-          🎵
+        <div className="w-24 h-24 rounded-xl bg-gray-100 flex items-center justify-center overflow-hidden">
+          {coverUrl ? (
+            <img
+              src={coverUrl}
+              alt={release.title}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              🎵
+            </div>
+          )}
         </div>
 
         <div>
           <span className="inline-block text-xs px-2 py-1 rounded-full bg-gray-100 mb-1">
-            {release.status === "DRAFT" ? "Черновик" : "Опубликован"}
+            {statusMap[release.status]}
           </span>
 
-          <h1 className="text-2xl font-bold">
-            {release.tracks[0]?.artists[0]?.name || release.title}
-          </h1>
+          <h1 className="text-2xl font-bold">{release.title}</h1>
 
           <p className="text-sm text-gray-500">
             {release.artist.name}
@@ -57,9 +77,11 @@ export async function ReleaseDetailsServer({ releaseId }: Props) {
           {release.tracks.map((track) => (
             <li
               key={track.id}
-              className="flex justify-between items-center p-2 border rounded-xl"
+              className="flex justify-between items-center p-3 border rounded-xl"
             >
-              <span>{track.title}</span>
+              <span>
+                {track.artists.map((a) => a.name).join(", ")} — {track.title}
+              </span>
               <span className="text-gray-400">{track.duration}s</span>
             </li>
           ))}
@@ -89,3 +111,4 @@ export async function ReleaseDetailsServer({ releaseId }: Props) {
     </>
   );
 }
+

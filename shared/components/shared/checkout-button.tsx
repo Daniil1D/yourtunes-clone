@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { createOrder } from '@/app/actions';
+import { createOrder } from '@/app/actions/index';
 import { Button } from '@/shared/components/ui';
 import { Loader2, CreditCard } from 'lucide-react';
 

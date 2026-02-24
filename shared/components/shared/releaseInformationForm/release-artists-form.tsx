@@ -2,7 +2,13 @@
 
 import { FormInput } from "@/shared/components/shared/form/form-input";
 
-export const ReleaseArtistsForm = () => {
+interface Props {
+  release: any;
+}
+
+export const ReleaseArtistsForm = ({ release }: Props) => {
+  const firstTrack = release.tracks?.[0];
+  const firstArtist = firstTrack?.artists?.[0]
   return (
     <div className="rounded-3xl border bg-white shadow-sm p-8 space-y-4">
       <div className="space-y-1">
@@ -14,6 +20,7 @@ export const ReleaseArtistsForm = () => {
 
       <FormInput
         name="artist"
+        defaultValue={firstArtist?.name || ""}
         placeholder="Название артиста"
         disabled
       />

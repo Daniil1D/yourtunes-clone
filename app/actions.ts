@@ -96,14 +96,14 @@ export async function registerUser(body: Prisma.UserCreateInput) {
   try {
     const user = await prisma.user.findFirst({
       where: {
-        email: body.email,
-      },
-    });
+        email: body.email
+      }
+    })
 
     if (user) {
-      throw new Error('Пользователь уже существует');
+      throw new Error("Пользователь уже существует")
     }
-
+    
     await prisma.user.create({
       data: {
         fullName: body.fullName,

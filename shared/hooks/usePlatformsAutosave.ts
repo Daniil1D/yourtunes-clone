@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 import { usePlatformsStore } from '@/shared/store/platforms-store'
-import { savePlatforms } from '@/app/actions'
+import { savePlatforms } from '@/app/actions/index'
 import toast from 'react-hot-toast'
 
 export function usePlatformsAutosave(releaseId: string) {

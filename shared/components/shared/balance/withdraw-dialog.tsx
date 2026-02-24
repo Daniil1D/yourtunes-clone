@@ -11,7 +11,7 @@ import {
 } from "@/shared/components/ui";
 
 import { Button, Input } from "@/shared/components/ui";
-import { withdrawBalance } from "@/app/actions";
+import { withdrawBalance } from "@/app/actions/index";
 import { useRouter } from "next/navigation";
 
 interface Props {

@@ -1,23 +1,42 @@
-import { Suspense } from "react";
 import { Container, Title } from "@/shared/components/shared";
-import { PlatformsSkeleton } from "@/shared/components/shared/skeleton/platforms-skeleton";
-
-
+import { prisma } from "@/prisma/prisma-client";
+import { ReleaseMainForm } from "@/shared/components/shared/platforms/release-main-form";
 interface PageProps {
   params: Promise<{ id: string }>;
 }
-
-export default async function SelectPlatformsPage({ params }: PageProps) {
+export default async function InformationReleasePage({ params }: PageProps) {
   const { id } = await params;
 
+  const release = await prisma.release.findUnique({
+    where: { id },
+    include: {
+      artist: true,
+      platforms: {
+        include: {
+          platform: true,
+        },
+      },
+    },
+  });
+
+  const allPlatforms = await prisma.platform.findMany({
+    where: { active: true },
+    orderBy: { name: "asc" },
+  });
+
+  if (!release) return <div>Релиз не найден</div>;
+
   return (
-    <Container className="space-y-10 mt-10">
+    <Container className="mt-10 space-y-8">
+      <Title text="Информация о релизе" size="xl" />
 
-      <Title text="Выбери площадки" size="2xl" className="font-bold" />
+      <ReleaseMainForm
+        release={release}
+        platforms={allPlatforms}
+        id={release.id}
+      />
 
-      <Suspense fallback={<PlatformsSkeleton />}>
-
-      </Suspense>
     </Container>
   );
 }
+

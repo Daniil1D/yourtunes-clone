@@ -5,11 +5,11 @@ import toast from "react-hot-toast";
 import axios from "axios";
 import { Prisma } from "@prisma/client";
 
-import { FormInput } from "../form/form-input";
+
 import { PlatformsDropdown } from "./platforms-dropdown";
 import { Button } from "@/shared/components/ui/button";
 import { useRouter } from "next/navigation";
-import { ReleaseCoverUpload } from "./release-cover-upload";
+import { ReleaseCoverUpload } from "../releaseInformationForm/release-cover-upload";
 
 type ReleaseFull = Prisma.ReleaseGetPayload<{
   include: {
@@ -83,19 +83,7 @@ export const ReleaseMainForm = ({ id, release, platforms }: Props) => {
       <form className="bg-white border rounded-2xl shadow-sm p-6 space-y-6">
         <h2 className="text-lg font-bold">Основная информация</h2>
 
-        {/* Название */}
-        <FormInput
-          name="title"
-          placeholder="Название релиза"
-          rules={{ required: "Введите название" }}
-        />
-
-        {/* Артист */}
-        <FormInput
-          name="artistName"
-          placeholder="Исполнитель"
-          rules={{ required: "Введите исполнителя" }}
-        />
+     
 
         {/* Платформы */}
         <PlatformsDropdown platforms={platforms} name="platformIds" />

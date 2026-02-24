@@ -3,7 +3,7 @@
 import React, { useState } from 'react'
 import { Pencil, Trash2, ArrowRight } from 'lucide-react'
 import { Button } from '@/shared/components/ui/button'
-import { deleteRelease } from '@/app/actions'
+import { deleteRelease } from '@/app/actions/index'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
 import {
@@ -22,12 +22,22 @@ import { Spinner } from '@/shared/components/shared/spinner'
 interface Props {
   id: string
   title: string
-  status: 'Черновик' | 'Опубликован'
+  status: string
+  coverUrl?: string | null
 }
 
-export const ReleaseCard: React.FC<Props> = ({ id, title, status }) => {
+export const ReleaseCard: React.FC<Props> = ({ id, title, status, coverUrl }) => {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
+
+  const statusMap: Record<string, string> = {
+    DRAFT: "Черновик",
+    SUBMITTED: "Отправлен",
+    IN_REVIEW: "На проверке",
+    APPROVED: "Одобрен",
+    DISTRIBUTED: "Доставлен",
+    REJECTED: "Отклонён",
+  };
 
   const onDelete = async () => {
     setLoading(true)
@@ -47,12 +57,16 @@ export const ReleaseCard: React.FC<Props> = ({ id, title, status }) => {
   return (
     <div className="flex items-center gap-4 border rounded-2xl p-4 bg-white">
       <div className="w-24 h-24 rounded-xl bg-gray-100 flex items-center justify-center">
-        🎵
+        {coverUrl ? (
+          <img src={coverUrl} className="w-full h-full object-cover" />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">🎵</div>
+        )}
       </div>
 
       <div className="flex-1">
         <span className="inline-block text-xs px-2 py-1 rounded-full bg-gray-100 mb-1">
-          {status}
+          {statusMap[status]}
         </span>
         <h3 className="text-xl font-bold">{title}</h3>
       </div>
@@ -113,3 +127,4 @@ export const ReleaseCard: React.FC<Props> = ({ id, title, status }) => {
     </div>
   )
 }
+

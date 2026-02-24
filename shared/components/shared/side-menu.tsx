@@ -23,12 +23,13 @@ interface Props {
 const menu = [
   { id: 1, icon: User, label: "Профиль", href: "/account" },
   { id: 2, icon: Music, label: "Релизы", href: "/releases" },
-  { id: 3, icon: LayoutGrid, label: "Статистика", href: "/statistics" },
-  { id: 4, icon: CreditCard, label: "Баланс", href: "/balance" },
-  { id: 5, icon: Banknote, label: "Финансы", href: "/finans-analitica" },
-  { id: 6, icon: Briefcase, label: "Услуги", href: "/dop-uslugi" },
-  { id: 7, icon: HelpCircle, label: "Помощь", href: "/help" },
-  { id: 8, icon: LifeBuoy, label: "Поддержка", href: "/support" },
+  { id: 3, icon: Music, label: "Топ чарты", href: "/charts"},
+  { id: 4, icon: LayoutGrid, label: "Статистика", href: "/statistics" },
+  { id: 5, icon: CreditCard, label: "Баланс", href: "/balance" },
+  { id: 6, icon: Banknote, label: "Финансы", href: "/finans-analitica" },
+  { id: 7, icon: Briefcase, label: "Услуги", href: "/dop-uslugi" },
+  { id: 8, icon: HelpCircle, label: "Помощь", href: "/help" },
+  { id: 9, icon: LifeBuoy, label: "Поддержка", href: "/support" },
 ];
 
 export const SideMenu: React.FC<Props> = ({ className }) => {
@@ -59,3 +60,4 @@ export const SideMenu: React.FC<Props> = ({ className }) => {
     </div>
   );
 };
+

@@ -75,6 +75,10 @@ model Release {
   genre   String?
   version String?
 
+  playsCount     Int      @default(0)  
+  chartPosition  Int?                  
+  trending       Boolean  @default(false)
+
   artistId String
   artist   Artist @relation(fields: [artistId], references: [id])
 
@@ -96,6 +100,7 @@ model Release {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
 
 model Track {
   id       String      @id @default(cuid())
@@ -376,6 +381,7 @@ enum ReleaseType {
 enum ReleaseStatus {
   DRAFT
   SUBMITTED
+  SCHEDULED
   IN_REVIEW
   APPROVED
   REJECTED
@@ -414,3 +420,4 @@ enum OrderType {
   SUBSCRIPTION
   BALANCE_TOPUP
 }
+

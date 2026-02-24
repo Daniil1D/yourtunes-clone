@@ -10,7 +10,7 @@ import {
 } from "@/shared/components/ui";
 
 import { Button, Input } from "@/shared/components/ui";
-import { createBalanceTopUp } from "@/app/actions";
+import { createBalanceTopUp } from "@/app/actions/index";
 import toast from "react-hot-toast";
 
 interface Props {

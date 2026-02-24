@@ -2,7 +2,12 @@
 
 import { FormInput } from "@/shared/components/shared/form/form-input";
 
-export const ReleaseMainFields = () => {
+interface Props { 
+  release: any;
+}
+
+export const ReleaseMainFields = ({ release }: Props) => {
+  const firstTrack = release.tracks?.[0]
   return (
     <div className="space-y-8">
       <div className="space-y-2">
@@ -12,7 +17,7 @@ export const ReleaseMainFields = () => {
           Название автоматически берётся из первого трека
         </p>
 
-        <FormInput name="title" placeholder="Название релиза" disabled />
+        <FormInput name="title" defaultValue={firstTrack?.title || ""} placeholder="Название релиза" disabled />
       </div>
 
       <div className="space-y-2">

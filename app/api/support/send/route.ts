@@ -13,13 +13,13 @@ export async function getAIResponse(message: string) {
       {
         role: "system",
         content: `
-Ты служба поддержки сервиса YourTunes.
-Используй ТОЛЬКО информацию ниже.
-Если ответа нет в базе знаний — скажи, что уточнишь.
+        Ты служба поддержки сервиса YourTunes.
+        Используй ТОЛЬКО информацию ниже.
+        Если ответа нет в базе знаний — скажи, что уточнишь.
 
-База знаний:
-${relevantKnowledge}
-`,
+        База знаний:
+        ${relevantKnowledge}
+        `,
       },
       {
         role: "user",
