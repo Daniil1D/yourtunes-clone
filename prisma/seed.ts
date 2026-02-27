@@ -104,7 +104,6 @@ async function up() {
     },
   })
 
-  /* ---------- FILES ---------- */
   const coverFile = await prisma.file.create({
     data: {
       type: 'IMAGE',
@@ -208,13 +207,11 @@ async function up() {
     ],
   });
 
-  // ----------------- ЗАКАЗ -----------------
-  // Создадим заказ для пользователя
   const order = await prisma.order.create({
     data: {
       userId: user.id,
       status: 'PAID',
-      total: 700, // сумма PRO + LABEL (250 + 450)
+      total: 700,
       items: {
         create: [
           { planId: 'PRO', price: 250, quantity: 1 },
@@ -224,8 +221,6 @@ async function up() {
     },
   });
 
-  // ----------------- ПОДПИСКИ -----------------
-  // Преобразуем оплаченный заказ в подписки
   await prisma.subscription.createMany({
     data: [
       {
@@ -233,7 +228,7 @@ async function up() {
         planId: 'PRO',
         active: true,
         startedAt: new Date(),
-        expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30), // 30 дней
+        expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
         orderId: order.id,
       },
       {
@@ -241,7 +236,7 @@ async function up() {
         planId: 'LABEL',
         active: true,
         startedAt: new Date(),
-        expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30), // 30 дней
+        expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
         orderId: order.id,
       },
     ],
@@ -251,12 +246,12 @@ async function up() {
 
 async function main() {
   try {
-    console.log('🌱 Seeding database...')
+    console.log('Seeding database...')
     await down()
     await up()
-    console.log('✅ Seeding completed')
+    console.log('Seeding completed')
   } catch (e) {
-    console.error('❌ Seeding failed', e)
+    console.error('Seeding failed', e)
     process.exit(1)
   } finally {
     await prisma.$disconnect()

@@ -26,7 +26,6 @@ export default async function BalancePage() {
       <div className="space-y-10">
         <Title text="Баланс" size="xl" />
 
-        {/* Баланс */}
         <div className="rounded-3xl bg-white p-8 shadow-sm space-y-6">
           <p className="text-gray-500 text-sm">Текущий баланс:</p>
 
@@ -35,7 +34,6 @@ export default async function BalancePage() {
           <BalanceActions />
         </div>
 
-        {/* Транзакции */}
         <div className="rounded-3xl bg-white p-8 shadow-sm">
           <h2 className="text-3xl font-bold mb-6">Транзакции</h2>
 
@@ -53,9 +51,7 @@ export default async function BalancePage() {
                     key={t.id}
                     className="flex justify-between items-center border rounded-2xl p-4 hover:bg-gray-50 transition"
                   >
-                    {/* Левая часть: иконка + описание */}
                     <div className="flex items-center gap-4">
-                      {/* Иконка */}
                       <div
                         className={`w-12 h-12 flex items-center justify-center rounded-full text-xl font-bold ${
                           isWithdraw
@@ -66,7 +62,6 @@ export default async function BalancePage() {
                         {isWithdraw ? "↓" : "↑"}
                       </div>
 
-                      {/* Текст */}
                       <div>
                         <p className="font-medium text-lg">
                           {isWithdraw ? "Вывод средств" : "Пополнение баланса"}
@@ -78,7 +73,6 @@ export default async function BalancePage() {
                       </div>
                     </div>
 
-                    {/* Правая часть: сумма */}
                     <p
                       className={`text-xl font-bold ${
                         isWithdraw ? "text-red-600" : "text-green-600"

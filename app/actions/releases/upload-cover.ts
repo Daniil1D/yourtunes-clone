@@ -13,7 +13,6 @@ export async function uploadCover(
   const session = await getUserSession();
   if (!session) throw new Error("Not authenticated");
 
-  // Проверяем, что релиз принадлежит пользователю
   const release = await prisma.release.findFirst({
     where: {
       id: releaseId,

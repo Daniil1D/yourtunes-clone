@@ -10,7 +10,6 @@ export async function upsertTrackArtist(
   const session = await getUserSession();
   if (!session) throw new Error("Not authenticated");
 
-  // Проверка доступа
   const track = await prisma.track.findFirst({
     where: {
       id: trackId,

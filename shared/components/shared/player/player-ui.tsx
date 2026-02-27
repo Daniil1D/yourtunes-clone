@@ -23,7 +23,6 @@ export const PlayerUI = () => {
 
   const audioRef = useRef<HTMLAudioElement>(null)
 
-  // ▶ Play / Pause
   useEffect(() => {
     if (!audioRef.current) return
 
@@ -34,14 +33,12 @@ export const PlayerUI = () => {
     }
   }, [isPlaying])
 
-  // 🎵 Новый трек
   useEffect(() => {
     if (!audioUrl || !audioRef.current) return
 
     audioRef.current.load()
     audioRef.current.play().catch(() => {})
 
-    // 🔥 Отправка play через axios
     if (releaseId) {
       axios.post("/api/play", { releaseId })
         .catch((err) => {

@@ -228,7 +228,6 @@ export const RegisterForm: React.FC<Props> = ({ onClose }) => {
           </div>
         </div>
 
-        {/* кнопка */}
         <Button className="h-12 text-base" type="submit" disabled={loading}>
           {loading && <Spinner />}
           {loading ? "Создаём аккаунт…" : "Зарегистрироваться"}

@@ -41,7 +41,6 @@ export async function ReleaseDetailsServer({ releaseId }: Props) {
 
   return (
     <>
-      {/* HEADER */}
       <div className="flex items-center gap-6">
         <div className="w-24 h-24 rounded-xl bg-gray-100 flex items-center justify-center overflow-hidden">
           {coverUrl ? (

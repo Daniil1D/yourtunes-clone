@@ -9,7 +9,6 @@ interface PageProps {
 export default async function EditReleasePage({ params }: PageProps) {
   const { id } = await params;
 
-  // Получаем релиз с уже выбранными платформами
   const release = await prisma.release.findUnique({
     where: { id },
     include: {
@@ -24,7 +23,6 @@ export default async function EditReleasePage({ params }: PageProps) {
 
   if (!release) return <div>Релиз не найден</div>;
 
-  // Получаем все активные платформы для выбора
   const allPlatforms = await prisma.platform.findMany({
     where: { active: true },
     orderBy: { name: "asc" },

@@ -1,5 +1,4 @@
 import { CartItem } from '@prisma/client';
-import { calcCartItemTotalPrice } from './calc-cart-item-total-price';
 
 export type CartStateItem = {
   id: string;
@@ -17,7 +16,6 @@ interface ReturnProps {
   totalAmount: number;
 }
 
-// data.items — массив CartItem с include plan
 export const getCartDetails = (data: { items: (CartItem & { plan: { title: string; price: number; oldPrice: number | null; highlighted: boolean } })[] }): ReturnProps => {
   const items: CartStateItem[] = data.items.map((item) => ({
     id: item.id,
@@ -26,7 +24,6 @@ export const getCartDetails = (data: { items: (CartItem & { plan: { title: strin
     name: item.plan.title,
     price: item.quantity * item.plan.price,
     highlighted: item.plan.highlighted,
-    // Если oldPrice null, присваиваем undefined
     oldPrice: item.plan.oldPrice ?? undefined,
     disabled: false,
   }));

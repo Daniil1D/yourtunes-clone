@@ -34,7 +34,7 @@ type TrackWithRelations = Prisma.TrackGetPayload<{
 
 interface TrackFormProps {
   track: TrackWithRelations;
-  onCompleted?: () => void; // 🔥 сообщаем родителю
+  onCompleted?: () => void;
 }
 
 export const TrackForm: React.FC<TrackFormProps> = ({ track, onCompleted }) => {
@@ -59,7 +59,7 @@ export const TrackForm: React.FC<TrackFormProps> = ({ track, onCompleted }) => {
       toast.success("Сохранено ✅", { id: toastId });
 
       setIsCompleted(true);
-      onCompleted?.(); // 🔥 сигнал наверх
+      onCompleted?.();
     } catch {
       toast.error("Ошибка ❌", { id: toastId });
     }
@@ -103,7 +103,6 @@ export const TrackForm: React.FC<TrackFormProps> = ({ track, onCompleted }) => {
           />
         )}
 
-        {/* 🔥 Кнопка Готово */}
         <Button
           type="submit"
           disabled={!formState.isValid}
@@ -112,7 +111,6 @@ export const TrackForm: React.FC<TrackFormProps> = ({ track, onCompleted }) => {
           Готово
         </Button>
 
-        {/* 🔥 Статус */}
         {isCompleted && (
           <div className="text-green-600 text-center font-medium">
             ✔ Заполнено

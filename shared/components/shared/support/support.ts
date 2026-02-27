@@ -8,7 +8,6 @@ export const getSupportMessages = async () => {
     if (axios.isAxiosError(error)) {
       console.log("Support GET error:", error.response?.status);
 
-      // если не авторизован
       if (error.response?.status === 401) {
         return [];
       }

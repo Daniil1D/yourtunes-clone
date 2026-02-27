@@ -37,9 +37,8 @@ export async function updateTrack(
     data: {
       title: data.title,
 
-      // 🔥 обновляем артиста
       artists: {
-        deleteMany: {}, // удаляем старых
+        deleteMany: {},
         create: [
           {
             name: data.artistName,
@@ -49,7 +48,6 @@ export async function updateTrack(
     },
   });
 
-  // 🔥 если это единственный трек — синхронизируем релиз
   if (existingTrack.release.tracks.length === 1) {
     await prisma.release.update({
       where: { id: existingTrack.releaseId },

@@ -56,10 +56,6 @@ export const ReleaseMainForm = ({ id, release, platforms }: Props) => {
     formState: { isValid },
   } = methods;
 
-  // ✅ Сохранение только по кнопке
-
-
-  // ✅ Далее доступно только если форма валидна
   const onNext = async () => {
     const values = methods.getValues();
 
@@ -83,17 +79,8 @@ export const ReleaseMainForm = ({ id, release, platforms }: Props) => {
       <form className="bg-white border rounded-2xl shadow-sm p-6 space-y-6">
         <h2 className="text-lg font-bold">Основная информация</h2>
 
-     
-
-        {/* Платформы */}
         <PlatformsDropdown platforms={platforms} name="platformIds" />
 
-        {/* Обложка */}
-        <ReleaseCoverUpload />
-
-
-
-        {/* ✅ Кнопка далее */}
         <Button
           type="button"
           className="w-full text-lg py-6 rounded-xl"

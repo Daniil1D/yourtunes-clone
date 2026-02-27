@@ -34,8 +34,6 @@ export const ReleaseInformationForm: React.FC<Props> = ({
 }) => {
   const router = useRouter();
 
-  // const { setRelease } = useReleaseStore();
-
   const methods = useForm<ReleaseInfoFormValues>({
     defaultValues: {
       title: release.title ?? "",
