@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 export default async function BalancePage() {
   const session = await getUserSession();
-  if (!session) return null;
+  if (!session) return null; 
 
   const user = await prisma.user.findUnique({
     where: { id: session.id },
